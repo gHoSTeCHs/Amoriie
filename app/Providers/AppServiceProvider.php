@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->registerServices();
     }
 
     /**
@@ -24,6 +24,28 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+    }
+
+    protected function registerServices(): void
+    {
+        /**
+         * Service bindings will be enabled in Phase 2 when implementations are created.
+         *
+         * $this->app->bind(
+         *     \App\Services\Contracts\SlugServiceInterface::class,
+         *     \App\Services\SlugService::class
+         * );
+         *
+         * $this->app->bind(
+         *     \App\Services\Contracts\MediaServiceInterface::class,
+         *     \App\Services\MediaService::class
+         * );
+         *
+         * $this->app->bind(
+         *     \App\Services\Contracts\ValentineServiceInterface::class,
+         *     \App\Services\ValentineService::class
+         * );
+         */
     }
 
     protected function configureDefaults(): void
