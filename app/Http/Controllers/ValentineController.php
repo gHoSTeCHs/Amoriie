@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Template;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,7 +15,14 @@ class ValentineController extends Controller
      */
     public function index(): Response
     {
-        return Inertia::render('create/index');
+        $templates = Template::query()
+            ->active()
+            ->ordered()
+            ->get();
+
+        return Inertia::render('create/index', [
+            'templates' => $templates,
+        ]);
     }
 
     /**
@@ -22,8 +30,13 @@ class ValentineController extends Controller
      */
     public function builder(string $templateId): Response
     {
+        $template = Template::query()
+            ->where('id', $templateId)
+            ->active()
+            ->firstOrFail();
+
         return Inertia::render('create/builder', [
-            'templateId' => $templateId,
+            'template' => $template,
         ]);
     }
 
