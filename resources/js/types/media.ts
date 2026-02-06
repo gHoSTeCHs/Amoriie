@@ -45,3 +45,9 @@ export type AudioMetadata = {
     sample_rate?: number;
     channels?: number;
 };
+
+export type AudioTrimData = {
+    start_time: number;
+    end_time: number;
+    original_duration: number;
+};

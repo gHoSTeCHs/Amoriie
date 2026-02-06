@@ -37,7 +37,7 @@ enum MediaType: string
     {
         return match ($this) {
             self::Image => ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
-            self::Audio => ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg'],
+            self::Audio => ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/x-m4a', 'audio/m4a'],
         };
     }
 

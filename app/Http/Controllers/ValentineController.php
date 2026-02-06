@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Template;
+use App\Models\Valentine;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -65,8 +66,26 @@ class ValentineController extends Controller
      */
     public function show(string $slug): Response
     {
+        $valentine = Valentine::query()
+            ->bySlug($slug)
+            ->active()
+            ->with('template')
+            ->first();
+
+        if (!$valentine) {
+            return Inertia::render('valentine/show', [
+                'error' => 'Valentine not found or has expired',
+            ]);
+        }
+
         return Inertia::render('valentine/show', [
-            'slug' => $slug,
+            'valentine' => [
+                'id' => $valentine->id,
+                'slug' => $valentine->slug,
+                'recipient_name' => $valentine->recipient_name,
+                'template_id' => $valentine->template_id,
+                'customizations' => $valentine->customizations,
+            ],
         ]);
     }
 

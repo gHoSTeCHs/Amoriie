@@ -1,8 +1,14 @@
-import type { PendingMedia } from '@/types/media';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import type { BuilderStep } from '@/lib/constants';
+import type { PendingMedia } from '@/types/media';
+
+export type StepValidation = {
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+};
 
 export type BuilderState = {
     template_id: string | null;
@@ -10,6 +16,7 @@ export type BuilderState = {
     customizations: Record<string, unknown>;
     pending_media: PendingMedia[];
     is_dirty: boolean;
+    step_validation: StepValidation;
 };
 
 export type BuilderActions = {
@@ -22,6 +29,7 @@ export type BuilderActions = {
     removePendingMedia: (id: string) => void;
     clearPendingMedia: () => void;
     setIsDirty: (isDirty: boolean) => void;
+    setStepValidation: (validation: StepValidation) => void;
     reset: () => void;
     resetForTemplate: (templateId: string) => void;
 };
@@ -32,6 +40,7 @@ const initialState: BuilderState = {
     customizations: {},
     pending_media: [],
     is_dirty: false,
+    step_validation: { isValid: true, errors: [], warnings: [] },
 };
 
 export const useBuilderStore = create<BuilderState & BuilderActions>()(
@@ -76,6 +85,8 @@ export const useBuilderStore = create<BuilderState & BuilderActions>()(
 
             setIsDirty: (isDirty) => set({ is_dirty: isDirty }),
 
+            setStepValidation: (validation) => set({ step_validation: validation }),
+
             reset: () => set(initialState),
 
             resetForTemplate: (templateId) =>
@@ -110,4 +121,12 @@ export function useBuilderIsDirty() {
 
 export function useBuilderTemplateId() {
     return useBuilderStore((state) => state.template_id);
+}
+
+export function useBuilderStepValidation() {
+    return useBuilderStore((state) => state.step_validation);
+}
+
+export function useBuilderCanContinue() {
+    return useBuilderStore((state) => state.step_validation.isValid);
 }

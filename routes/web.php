@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AudioLibraryController;
 use App\Http\Controllers\SlugController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\ValentineController;
@@ -38,10 +39,20 @@ Route::prefix('api')->group(function (): void {
         Route::post('progress', [ValentineController::class, 'recordProgress'])->name('api.valentines.progress');
         Route::post('respond', [ValentineController::class, 'recordResponse'])->name('api.valentines.respond');
     });
+
+    Route::get('audio-library', [AudioLibraryController::class, 'index'])
+        ->name('api.audio-library.index');
 });
 
 Route::get('for/{slug}', [ValentineController::class, 'show'])->name('valentine.show');
 
 Route::get('stats/{secret}', [StatsController::class, 'show'])->name('stats.show');
+
+if (app()->isLocal()) {
+    Route::prefix('preview')->name('preview.')->group(function (): void {
+        Route::get('/image-uploader', fn () => Inertia::render('preview/image-uploader'))->name('image-uploader');
+        Route::get('/audio-trimmer', fn () => Inertia::render('preview/audio-trimmer'))->name('audio-trimmer');
+    });
+}
 
 require __DIR__.'/settings.php';

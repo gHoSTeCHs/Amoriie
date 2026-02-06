@@ -21,6 +21,7 @@ import {
     useBuilderTemplateId,
     useBuilderIsDirty,
     useBuilderStep,
+    useBuilderCanContinue,
 } from '@/stores/builder-store';
 import { useTemplateModule } from '@/templates/registry';
 import type { Template } from '@/types/template';
@@ -33,6 +34,7 @@ export default function Builder({ template }: Props) {
     const storedTemplateId = useBuilderTemplateId();
     const isDirty = useBuilderIsDirty();
     const currentStep = useBuilderStep();
+    const canContinue = useBuilderCanContinue();
     const { setCurrentStep, resetForTemplate, setIsDirty, updateCustomizations } = useBuilderStore();
 
     const [showSwitchDialog, setShowSwitchDialog] = useState(false);
@@ -177,7 +179,7 @@ export default function Builder({ template }: Props) {
             onStepClick={handleStepClick}
             onBack={handleBack}
             onContinue={handleContinue}
-            canContinue={true}
+            canContinue={canContinue}
             title={`${template.name} — Amoriie`}
         >
             <TemplateBuilder template={template} onStepComplete={handleStepComplete} />
