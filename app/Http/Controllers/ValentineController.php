@@ -2,18 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Valentine\RecordProgressRequest;
+use App\Http\Requests\Valentine\RecordResponseRequest;
+use App\Http\Requests\Valentine\RecordViewRequest;
+use App\Http\Requests\Valentine\StoreValentineRequest;
 use App\Models\Template;
 use App\Models\Valentine;
+use App\Services\Contracts\ValentineServiceInterface;
+use App\Services\R2StorageService;
+use App\Services\ValentineService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ValentineController extends Controller
 {
-    /**
-     * Display the template selection page.
-     */
+    public function __construct(
+        private ValentineServiceInterface $valentineService,
+        private R2StorageService $r2Storage
+    ) {}
+
     public function index(): Response
     {
         $templates = Template::query()
@@ -26,9 +35,6 @@ class ValentineController extends Controller
         ]);
     }
 
-    /**
-     * Display the valentine builder for a specific template.
-     */
     public function builder(string $templateId): Response
     {
         $template = Template::query()
@@ -41,29 +47,72 @@ class ValentineController extends Controller
         ]);
     }
 
-    /**
-     * Display the preview page for a valentine being built.
-     */
     public function preview(string $templateId): Response
     {
+        $template = Template::query()
+            ->where('id', $templateId)
+            ->active()
+            ->first();
+
+        if (! $template) {
+            abort(404);
+        }
+
         return Inertia::render('create/preview', [
             'templateId' => $templateId,
         ]);
     }
 
-    /**
-     * Store a newly created valentine.
-     */
-    public function store(Request $request): JsonResponse
+    public function store(StoreValentineRequest $request): JsonResponse
     {
+        Gate::authorize('create', Valentine::class);
+
+        $validated = $request->validated();
+
+        $mediaFiles = [
+            'images' => $request->file('images', []),
+            'audio' => $request->file('audio'),
+        ];
+
+        $valentine = $this->valentineService->createValentine($validated, $mediaFiles);
+
         return response()->json([
-            'message' => 'Valentine creation not yet implemented',
-        ], 501);
+            'success' => true,
+            'valentine' => [
+                'id' => $valentine->id,
+                'slug' => $valentine->slug,
+                'public_url' => $valentine->getPublicUrl(),
+                'stats_url' => $valentine->getStatsUrl(),
+            ],
+        ], 201);
     }
 
-    /**
-     * Display a valentine by its public slug.
-     */
+    public function success(string $slug): Response
+    {
+        $valentine = Valentine::query()
+            ->bySlug($slug)
+            ->active()
+            ->first();
+
+        if (! $valentine) {
+            return Inertia::render('create/success', [
+                'error' => 'Valentine not found',
+            ]);
+        }
+
+        return Inertia::render('create/success', [
+            'valentine' => [
+                'slug' => $valentine->slug,
+                'recipient_name' => $valentine->recipient_name,
+                'public_url' => $valentine->getPublicUrl(),
+                'stats_url' => $valentine->getStatsUrl(),
+            ],
+            'config' => [
+                'expires_in_days' => ValentineService::EXPIRES_IN_DAYS,
+            ],
+        ]);
+    }
+
     public function show(string $slug): Response
     {
         $valentine = Valentine::query()
@@ -72,50 +121,108 @@ class ValentineController extends Controller
             ->with('template')
             ->first();
 
-        if (!$valentine) {
+        if ($valentine) {
+            $ogImageUrl = $valentine->og_image_path
+                ? $this->r2Storage->getPublicUrl($valentine->og_image_path)
+                : null;
+
             return Inertia::render('valentine/show', [
-                'error' => 'Valentine not found or has expired',
+                'valentine' => [
+                    'id' => $valentine->id,
+                    'slug' => $valentine->slug,
+                    'recipient_name' => $valentine->recipient_name,
+                    'template_id' => $valentine->template_id,
+                    'customizations' => $valentine->customizations,
+                ],
+                'og_image_url' => $ogImageUrl,
+                'public_url' => $valentine->getPublicUrl(),
+            ]);
+        }
+
+        $expiredValentine = Valentine::query()
+            ->bySlug($slug)
+            ->published()
+            ->expired()
+            ->first();
+
+        $defaultOgImage = asset('images/og-default.png');
+
+        if ($expiredValentine) {
+            return Inertia::render('valentine/show', [
+                'error' => 'expired',
+                'recipient_name' => $expiredValentine->recipient_name,
+                'og_image_url' => $defaultOgImage,
+                'og_title' => 'Valentine Expired — Amoriie',
+                'og_description' => 'This valentine has expired. Create your own special valentine to share with someone you love.',
             ]);
         }
 
         return Inertia::render('valentine/show', [
-            'valentine' => [
-                'id' => $valentine->id,
-                'slug' => $valentine->slug,
-                'recipient_name' => $valentine->recipient_name,
-                'template_id' => $valentine->template_id,
-                'customizations' => $valentine->customizations,
-            ],
+            'error' => 'not_found',
+            'og_image_url' => $defaultOgImage,
+            'og_title' => 'Valentine Not Found — Amoriie',
+            'og_description' => 'Create a beautiful, personalized valentine to share with someone special.',
         ]);
     }
 
-    /**
-     * Record a view for a valentine.
-     */
-    public function recordView(string $slug): JsonResponse
+    public function recordView(RecordViewRequest $request, string $slug): JsonResponse
     {
-        return response()->json([
-            'message' => 'View recording not yet implemented',
-        ], 501);
+        $valentine = Valentine::query()
+            ->bySlug($slug)
+            ->active()
+            ->first();
+
+        if (! $valentine) {
+            return response()->json(['error' => 'Valentine not found'], 404);
+        }
+
+        $this->valentineService->recordView(
+            $valentine,
+            $request->validated('fingerprint')
+        );
+
+        return response()->json(['success' => true]);
     }
 
-    /**
-     * Record progress through the valentine experience.
-     */
-    public function recordProgress(Request $request, string $slug): JsonResponse
+    public function recordProgress(RecordProgressRequest $request, string $slug): JsonResponse
     {
-        return response()->json([
-            'message' => 'Progress recording not yet implemented',
-        ], 501);
+        $valentine = Valentine::query()
+            ->bySlug($slug)
+            ->active()
+            ->first();
+
+        if (! $valentine) {
+            return response()->json(['error' => 'Valentine not found'], 404);
+        }
+
+        $validated = $request->validated();
+
+        $this->valentineService->recordProgress(
+            $valentine,
+            $validated['section'],
+            $validated['memory_index'] ?? null,
+            $validated['fingerprint'] ?? null
+        );
+
+        return response()->json(['success' => true]);
     }
 
-    /**
-     * Record the recipient's response.
-     */
-    public function recordResponse(Request $request, string $slug): JsonResponse
+    public function recordResponse(RecordResponseRequest $request, string $slug): JsonResponse
     {
-        return response()->json([
-            'message' => 'Response recording not yet implemented',
-        ], 501);
+        $valentine = Valentine::query()
+            ->bySlug($slug)
+            ->active()
+            ->first();
+
+        if (! $valentine) {
+            return response()->json(['error' => 'Valentine not found'], 404);
+        }
+
+        $this->valentineService->recordResponse(
+            $valentine,
+            $request->validated('response')
+        );
+
+        return response()->json(['success' => true]);
     }
 }

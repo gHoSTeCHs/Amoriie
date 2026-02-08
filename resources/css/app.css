@@ -203,3 +203,137 @@
 .audio-region-handle {
     animation: handle-shimmer 2s ease-in-out infinite !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AMORIIE CUSTOM SCROLLBAR
+   A romantic, rose-tinted scrollbar that matches the app's elegant aesthetic
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Base scrollbar styles for the entire app */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(244, 63, 94, 0.4) transparent;
+}
+
+/* Webkit scrollbar (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        180deg,
+        rgba(251, 113, 133, 0.4) 0%,
+        rgba(244, 63, 94, 0.5) 50%,
+        rgba(190, 18, 60, 0.4) 100%
+    );
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+        180deg,
+        rgba(251, 113, 133, 0.6) 0%,
+        rgba(244, 63, 94, 0.7) 50%,
+        rgba(190, 18, 60, 0.6) 100%
+    );
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(
+        180deg,
+        rgba(251, 113, 133, 0.8) 0%,
+        rgba(244, 63, 94, 0.9) 50%,
+        rgba(190, 18, 60, 0.8) 100%
+    );
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Thin scrollbar variant - use with .scrollbar-thin class */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    border: none;
+}
+
+/* Hidden scrollbar - use with .scrollbar-hide class */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Rose glow scrollbar for special containers - use with .scrollbar-glow class */
+.scrollbar-glow::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar-glow::-webkit-scrollbar-track {
+    background: rgba(12, 6, 7, 0.5);
+    border-radius: 10px;
+}
+
+.scrollbar-glow::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        180deg,
+        rgba(251, 113, 133, 0.6) 0%,
+        rgba(244, 63, 94, 0.8) 50%,
+        rgba(251, 113, 133, 0.6) 100%
+    );
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 0 8px rgba(244, 63, 94, 0.5);
+}
+
+.scrollbar-glow::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+        180deg,
+        rgba(251, 113, 133, 0.8) 0%,
+        rgba(244, 63, 94, 1) 50%,
+        rgba(251, 113, 133, 0.8) 100%
+    );
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.7);
+}
+
+/* Minimal scrollbar for modals/sheets - use with .scrollbar-minimal class */
+.scrollbar-minimal::-webkit-scrollbar {
+    width: 3px;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-thumb {
+    background: rgba(251, 113, 133, 0.3);
+    border-radius: 3px;
+    border: none;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-thumb:hover {
+    background: rgba(251, 113, 133, 0.5);
+}

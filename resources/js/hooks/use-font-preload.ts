@@ -8,19 +8,24 @@ export type UseFontPreloadOptions = {
 
 export type UseFontPreloadReturn = {
     isLoaded: boolean;
-    error: Error | null;
+    loadTime: number | null;
+    timedOut: boolean;
 };
 
 export function useFontPreload(options: UseFontPreloadOptions): UseFontPreloadReturn {
     const { fontUrl, fontFamily, timeout = 3000 } = options;
 
     const [isLoaded, setIsLoaded] = useState(!fontUrl);
-    const [error] = useState<Error | null>(null);
+    const [loadTime, setLoadTime] = useState<number | null>(null);
+    const [timedOut, setTimedOut] = useState(false);
 
     useEffect(() => {
         if (!fontUrl) {
             return;
         }
+
+        const startTime = performance.now();
+        let didTimeout = false;
 
         const linkId = `font-preload-${fontFamily.replace(/[^a-z0-9]/gi, '-')}`;
         let link = document.getElementById(linkId) as HTMLLinkElement | null;
@@ -43,13 +48,20 @@ export function useFontPreload(options: UseFontPreloadOptions): UseFontPreloadRe
                     fontCheck.load().catch(() => null),
                 ]);
 
-                setIsLoaded(true);
+                if (!didTimeout) {
+                    setLoadTime(performance.now() - startTime);
+                    setIsLoaded(true);
+                }
             } catch {
-                setIsLoaded(true);
+                if (!didTimeout) {
+                    setIsLoaded(true);
+                }
             }
         };
 
         const timeoutId = setTimeout(() => {
+            didTimeout = true;
+            setTimedOut(true);
             setIsLoaded(true);
         }, timeout);
 
@@ -60,5 +72,5 @@ export function useFontPreload(options: UseFontPreloadOptions): UseFontPreloadRe
         };
     }, [fontUrl, fontFamily, timeout]);
 
-    return { isLoaded, error };
+    return { isLoaded, loadTime, timedOut };
 }

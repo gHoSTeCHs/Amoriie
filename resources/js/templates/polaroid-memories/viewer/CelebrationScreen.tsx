@@ -4,11 +4,17 @@ import { Heart, Sparkles } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
 import type { ViewerTheme } from '@/types/viewer';
+import { CELEBRATION_COLORS } from '../palettes';
 import type { PolaroidYesResponse } from '../schema';
 
 export type CelebrationScreenProps = {
-    yesResponse: PolaroidYesResponse;
+    yesResponse?: PolaroidYesResponse | null;
     theme: ViewerTheme;
+};
+
+const DEFAULT_YES_RESPONSE: PolaroidYesResponse = {
+    message: "You've made me the happiest person!",
+    reveal_photo: null,
 };
 
 const containerVariants = {
@@ -45,8 +51,13 @@ const imageVariants = {
     },
 };
 
+/**
+ * Heart entrance animation uses bouncier spring (400/15)
+ * for playful celebration effect, intentionally different
+ * from standard 300/30 used elsewhere.
+ */
 function fireConfetti() {
-    const colors = ['#f43f5e', '#fb7185', '#fda4af', '#ffe4e6', '#fff1f2'];
+    const colors = [...CELEBRATION_COLORS.confetti];
 
     confetti({
         particleCount: 80,
@@ -76,6 +87,7 @@ function fireConfetti() {
 }
 
 export function CelebrationScreen({ yesResponse, theme }: CelebrationScreenProps) {
+    const safeResponse = yesResponse ?? DEFAULT_YES_RESPONSE;
     const hasFireRef = useRef(false);
     const textColor = theme.isDarkBackground ? 'text-stone-100' : 'text-stone-800';
     const mutedTextColor = theme.isDarkBackground ? 'text-stone-300' : 'text-stone-600';
@@ -139,16 +151,16 @@ export function CelebrationScreen({ yesResponse, theme }: CelebrationScreenProps
                 className={`mb-8 max-w-sm text-center text-xl leading-relaxed ${textColor}`}
                 style={{ fontFamily: theme.fontFamily }}
             >
-                {yesResponse.message}
+                {safeResponse.message}
             </motion.p>
 
-            {yesResponse.reveal_photo && (
+            {safeResponse.reveal_photo && (
                 <motion.div
                     variants={imageVariants}
                     className="mb-8 overflow-hidden rounded-2xl shadow-xl"
                 >
                     <img
-                        src={yesResponse.reveal_photo}
+                        src={safeResponse.reveal_photo}
                         alt="Reveal"
                         className="max-h-[300px] max-w-full object-contain"
                     />

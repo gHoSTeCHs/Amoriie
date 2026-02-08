@@ -2,43 +2,51 @@ import type { ComponentType } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import type { Template } from '@/types/template';
+import type { AnyTemplateCustomizations, TemplateId } from '@/types/customizations';
+import { logger } from '@/lib/logger';
 
 export type TemplateBuilderProps = {
     template: Template;
     onStepComplete?: () => void;
 };
 
-export type TemplateViewerProps = {
+export type TemplateViewerProps<T extends AnyTemplateCustomizations = AnyTemplateCustomizations> = {
     template: Template;
-    customizations: Record<string, unknown>;
+    customizations: T;
+    slug?: string;
 };
 
 export type TemplateModule = {
     Builder: ComponentType<TemplateBuilderProps>;
     Viewer: ComponentType<TemplateViewerProps>;
-    getDefaultCustomizations: () => Record<string, unknown>;
+    getDefaultCustomizations: () => AnyTemplateCustomizations;
 };
 
 type TemplateLoader = () => Promise<{ default: TemplateModule }>;
 
-const templateRegistry: Record<string, TemplateLoader> = {
+const templateRegistry: Record<TemplateId, TemplateLoader> = {
     'polaroid-memories': () => import('./polaroid-memories/index'),
 };
+
+export function isTemplateRegistered(templateId: string): templateId is TemplateId {
+    return templateId in templateRegistry;
+}
 
 export async function loadTemplateModule(
     templateId: string
 ): Promise<TemplateModule | null> {
-    const loader = templateRegistry[templateId];
-    if (!loader) {
-        console.warn(`Template "${templateId}" not found in registry`);
+    if (!isTemplateRegistered(templateId)) {
+        logger.warn(`Template "${templateId}" not found in registry`);
         return null;
     }
+
+    const loader = templateRegistry[templateId];
 
     try {
         const module = await loader();
         return module.default;
     } catch (error) {
-        console.error(`Failed to load template "${templateId}":`, error);
+        logger.error(`Failed to load template "${templateId}":`, error);
         return null;
     }
 }
@@ -91,10 +99,6 @@ export function useTemplateModule(
     return { module, isLoading, error, reload: load };
 }
 
-export function isTemplateRegistered(templateId: string): boolean {
-    return templateId in templateRegistry;
-}
-
-export function getRegisteredTemplateIds(): string[] {
-    return Object.keys(templateRegistry);
+export function getRegisteredTemplateIds(): TemplateId[] {
+    return Object.keys(templateRegistry) as TemplateId[];
 }

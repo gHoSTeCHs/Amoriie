@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { MEDIA_CONSTRAINTS } from '@/lib/constraints';
 
 export type PolaroidMemory = {
     id: string;
@@ -46,8 +47,8 @@ export type PolaroidCustomizations = {
 
 export const POLAROID_LIMITS = {
     memories: {
-        min: 3,
-        max: 10,
+        min: MEDIA_CONSTRAINTS.MIN_IMAGES,
+        max: MEDIA_CONSTRAINTS.MAX_IMAGES,
     },
     caption: {
         max: 150,

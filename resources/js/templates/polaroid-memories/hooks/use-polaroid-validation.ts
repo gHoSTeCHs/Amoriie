@@ -1,7 +1,11 @@
 import { useMemo } from 'react';
 import type { BuilderStep } from '@/lib/constants';
-import { POLAROID_LIMITS } from '../schema';
+import { POLAROID_LIMITS, type PolaroidMemory } from '../schema';
 import { usePolaroidCustomizations } from './use-polaroid-customizations';
+
+function memoryHasImage(memory: PolaroidMemory): boolean {
+    return memory.image !== null || Boolean(memory.image_file);
+}
 
 export type ValidationResult = {
     isValid: boolean;
@@ -25,9 +29,7 @@ export function usePolaroidValidation(step?: BuilderStep): ValidationResult {
                     errors.push('Your name is required');
                 }
 
-                const memoriesWithImages = customizations.memories.filter(
-                    (m) => m.image !== null
-                );
+                const memoriesWithImages = customizations.memories.filter(memoryHasImage);
                 if (memoriesWithImages.length < POLAROID_LIMITS.memories.min) {
                     errors.push(
                         `Add at least ${POLAROID_LIMITS.memories.min} photos (you have ${memoriesWithImages.length})`
@@ -39,7 +41,7 @@ export function usePolaroidValidation(step?: BuilderStep): ValidationResult {
                 }
 
                 const memoriesWithoutCaptions = customizations.memories.filter(
-                    (m) => m.image && !m.caption.trim()
+                    (m) => memoryHasImage(m) && !m.caption.trim()
                 );
                 if (memoriesWithoutCaptions.length > 0) {
                     warnings.push(
@@ -72,6 +74,28 @@ export function usePolaroidValidation(step?: BuilderStep): ValidationResult {
                 break;
             }
 
+            case 'preview':
+            case 'publish': {
+                if (!customizations.recipient_name.trim()) {
+                    errors.push("Recipient's name is required");
+                }
+                if (!customizations.sender_name.trim()) {
+                    errors.push('Your name is required');
+                }
+
+                const publishMemoriesWithImages = customizations.memories.filter(memoryHasImage);
+                if (publishMemoriesWithImages.length < POLAROID_LIMITS.memories.min) {
+                    errors.push(
+                        `Add at least ${POLAROID_LIMITS.memories.min} photos`
+                    );
+                }
+
+                if (!customizations.final_message.ask_text.trim()) {
+                    errors.push('The question is required');
+                }
+                break;
+            }
+
             default: {
                 if (!customizations.recipient_name.trim()) {
                     errors.push("Recipient's name is required");
@@ -80,9 +104,7 @@ export function usePolaroidValidation(step?: BuilderStep): ValidationResult {
                     errors.push('Your name is required');
                 }
 
-                const totalMemoriesWithImages = customizations.memories.filter(
-                    (m) => m.image !== null
-                ).length;
+                const totalMemoriesWithImages = customizations.memories.filter(memoryHasImage).length;
                 if (totalMemoriesWithImages < POLAROID_LIMITS.memories.min) {
                     errors.push(
                         `Add at least ${POLAROID_LIMITS.memories.min} photos`

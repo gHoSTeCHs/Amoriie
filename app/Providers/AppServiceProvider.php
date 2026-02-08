@@ -32,6 +32,21 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Contracts\MediaServiceInterface::class,
             \App\Services\MediaService::class
         );
+
+        $this->app->bind(
+            \App\Services\Contracts\SlugServiceInterface::class,
+            \App\Services\SlugService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Contracts\ValentineServiceInterface::class,
+            \App\Services\ValentineService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Contracts\OgImageServiceInterface::class,
+            \App\Services\OgImageService::class
+        );
     }
 
     protected function configureDefaults(): void

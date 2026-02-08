@@ -1,3 +1,5 @@
+import { Image, Palette, Music, User, Eye, Send, type LucideIcon } from 'lucide-react';
+
 export type BuilderStep =
     | 'content'
     | 'style'
@@ -10,7 +12,7 @@ export type StepConfig = {
     id: BuilderStep;
     label: string;
     description: string;
-    icon: string;
+    icon: LucideIcon;
 };
 
 export const BUILDER_STEPS: StepConfig[] = [
@@ -18,37 +20,37 @@ export const BUILDER_STEPS: StepConfig[] = [
         id: 'content',
         label: 'Content',
         description: 'Add your photos and messages',
-        icon: 'Image',
+        icon: Image,
     },
     {
         id: 'style',
         label: 'Style',
         description: 'Choose colors and fonts',
-        icon: 'Palette',
+        icon: Palette,
     },
     {
         id: 'music',
         label: 'Music',
         description: 'Add background music',
-        icon: 'Music',
+        icon: Music,
     },
     {
         id: 'details',
         label: 'Details',
         description: 'Set recipient info',
-        icon: 'User',
+        icon: User,
     },
     {
         id: 'preview',
         label: 'Preview',
         description: 'Review your creation',
-        icon: 'Eye',
+        icon: Eye,
     },
     {
         id: 'publish',
         label: 'Publish',
         description: 'Share your valentine',
-        icon: 'Send',
+        icon: Send,
     },
 ];
 
@@ -89,3 +91,11 @@ export function canNavigateToStep(
     const currentIndex = getStepIndex(currentStep);
     return targetIndex <= currentIndex;
 }
+
+export const POLAROID_VIEWER = {
+    swipeThreshold: 80,
+    velocityThreshold: 500,
+    stackVisibleCards: 3,
+    cardScaleDecrement: 0.05,
+    cardYOffsetIncrement: 10,
+} as const;

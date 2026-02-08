@@ -1,12 +1,12 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Volume2, VolumeX } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { Watermark } from '@/components/shared/Watermark';
 import { useAudioPlayer } from '@/hooks/use-audio-player';
 import { useFontPreload } from '@/hooks/use-font-preload';
 import { useValentineProgress } from '@/hooks/use-valentine-progress';
-import type { ViewerStage, ViewerResponse } from '@/types/viewer';
+import type { ViewerResponse, ViewerStage } from '@/types/viewer';
 import { useViewerTheme } from '../hooks/use-viewer-theme';
 import type { PolaroidCustomizations } from '../schema';
 import { CelebrationScreen } from './CelebrationScreen';
@@ -21,8 +21,14 @@ export type PolaroidViewerProps = {
     onResponse?: (response: ViewerResponse) => void;
 };
 
-export function PolaroidViewer({ customizations, slug, onResponse }: PolaroidViewerProps) {
+export function PolaroidViewer({
+    customizations,
+    slug,
+    onResponse,
+}: PolaroidViewerProps) {
     const [stage, setStage] = useState<ViewerStage>('intro');
+
+    // console.log(customizations)
 
     const theme = useViewerTheme(customizations.theme);
     const { isLoaded: fontLoaded } = useFontPreload({
@@ -39,35 +45,51 @@ export function PolaroidViewer({ customizations, slug, onResponse }: PolaroidVie
 
     const { trackProgress, trackResponse } = useValentineProgress({ slug });
 
+    const validMemories = (customizations.memories ?? []).filter(
+        (m) => m.image,
+    );
+
     const handleStart = useCallback(() => {
         if (hasAudio && audio.isReady) {
             audio.play();
         }
-        setStage('memories');
-        trackProgress('memories', 0);
-    }, [hasAudio, audio, trackProgress]);
 
-    const handleMemoriesProgress = useCallback((index: number) => {
-        trackProgress('memories', index);
-    }, [trackProgress]);
+        if (validMemories.length === 0) {
+            setStage('final');
+            trackProgress('final');
+        } else {
+            setStage('memories');
+            trackProgress('memories', 0);
+        }
+    }, [hasAudio, audio, trackProgress, validMemories.length]);
+
+    const handleMemoriesProgress = useCallback(
+        (index: number) => {
+            trackProgress('memories', index);
+        },
+        [trackProgress],
+    );
 
     const handleMemoriesComplete = useCallback(() => {
         setStage('final');
         trackProgress('final');
     }, [trackProgress]);
 
-    const handleResponse = useCallback(async (response: ViewerResponse) => {
-        await trackResponse(response);
-        onResponse?.(response);
+    const handleResponse = useCallback(
+        async (response: ViewerResponse) => {
+            await trackResponse(response);
+            onResponse?.(response);
 
-        if (response === 'yes') {
-            setStage('celebration');
-            trackProgress('celebration');
-        } else {
-            setStage('declined');
-            trackProgress('declined');
-        }
-    }, [trackResponse, trackProgress, onResponse]);
+            if (response === 'yes') {
+                setStage('celebration');
+                trackProgress('celebration');
+            } else {
+                setStage('declined');
+                trackProgress('declined');
+            }
+        },
+        [trackResponse, trackProgress, onResponse],
+    );
 
     if (!fontLoaded) {
         return (
@@ -76,21 +98,23 @@ export function PolaroidViewer({ customizations, slug, onResponse }: PolaroidVie
                     <motion.div
                         className="h-8 w-8 rounded-full border-2 border-rose-400 border-t-transparent"
                         animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: 'linear',
+                        }}
                     />
                 </div>
             </div>
         );
     }
 
-    const validMemories = customizations.memories.filter((m) => m.image);
-
     return (
         <div className={`relative min-h-dvh ${theme.backgroundClass}`}>
             {hasAudio && stage !== 'intro' && (
                 <motion.button
                     onClick={audio.toggleMute}
-                    className={`fixed right-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-full backdrop-blur-sm transition-colors ${
+                    className={`fixed top-4 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-full backdrop-blur-sm transition-colors ${
                         theme.isDarkBackground
                             ? 'bg-white/10 text-white hover:bg-white/20'
                             : 'bg-black/10 text-stone-700 hover:bg-black/20'
@@ -118,8 +142,10 @@ export function PolaroidViewer({ customizations, slug, onResponse }: PolaroidVie
                         transition={{ duration: 0.4 }}
                     >
                         <IntroScreen
-                            title={customizations.title}
-                            recipientName={customizations.recipient_name}
+                            title={customizations.title ?? ''}
+                            recipientName={
+                                customizations.recipient_name ?? 'You'
+                            }
                             hasAudio={hasAudio}
                             theme={theme}
                             onStart={handleStart}
@@ -153,8 +179,10 @@ export function PolaroidViewer({ customizations, slug, onResponse }: PolaroidVie
                         transition={{ duration: 0.4 }}
                     >
                         <FinalScreen
-                            recipientName={customizations.recipient_name}
-                            senderName={customizations.sender_name}
+                            recipientName={
+                                customizations.recipient_name ?? 'You'
+                            }
+                            senderName={customizations.sender_name ?? ''}
                             finalMessage={customizations.final_message}
                             theme={theme}
                             onResponse={handleResponse}

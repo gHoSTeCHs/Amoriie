@@ -2,17 +2,18 @@
 
 namespace App\Services;
 
+use App\Support\MediaConstraints;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\Interfaces\ImageInterface;
 use Intervention\Image\Laravel\Facades\Image;
 
 class ImageProcessingService
 {
-    protected int $maxWidth = 1920;
+    protected int $maxWidth = MediaConstraints::IMAGE_MAX_WIDTH;
 
-    protected int $thumbnailWidth = 400;
+    protected int $thumbnailWidth = MediaConstraints::THUMBNAIL_WIDTH;
 
-    protected int $quality = 85;
+    protected int $quality = MediaConstraints::IMAGE_QUALITY;
 
     /**
      * Process an image without cropping.
@@ -70,10 +71,13 @@ class ImageProcessingService
 
     /**
      * Strip EXIF data from image for privacy.
+     *
+     * Uses orient() to read and apply EXIF orientation data before stripping.
+     * The subsequent encode to WebP/JPEG will remove all EXIF metadata.
      */
     protected function stripExif(ImageInterface $image): ImageInterface
     {
-        return $image;
+        return $image->orient();
     }
 
     /**

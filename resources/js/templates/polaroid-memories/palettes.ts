@@ -137,3 +137,7 @@ export function getPolaroidStyleById(id: string): PolaroidStyleOption | undefine
 export function getFontById(id: string): HandwritingFontOption | undefined {
     return HANDWRITING_FONTS.find((font) => font.id === id);
 }
+
+export const CELEBRATION_COLORS = {
+    confetti: ['#f43f5e', '#fb7185', '#fda4af', '#ffe4e6', '#fff1f2'],
+} as const;

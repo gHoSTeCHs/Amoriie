@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion';
+import { ImageOff } from 'lucide-react';
+import { useState } from 'react';
 
 import type { ViewerTheme } from '@/types/viewer';
 import type { PolaroidMemory } from '../schema';
@@ -20,7 +22,10 @@ export function PolaroidCard({
     zIndex = 0,
     className = '',
 }: PolaroidCardProps) {
+    const [imageError, setImageError] = useState(false);
     const rotationDeg = memory.rotation ?? 0;
+
+
 
     return (
         <motion.div
@@ -36,26 +41,34 @@ export function PolaroidCard({
                 opacity: isActive ? 1 : 0.7,
                 scale: isActive ? 1 : scale,
             }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            transition={{
+                type: 'spring' as const,
+                stiffness: 300,
+                damping: 30,
+            }}
         >
             <div className={`relative ${theme.polaroidTextureClass}`}>
                 <div className="p-3 pb-0">
                     <div className="relative aspect-square overflow-hidden bg-stone-200">
-                        {memory.image ? (
+                        {memory.image && !imageError ? (
                             <img
                                 src={memory.image}
                                 alt={memory.caption || 'Memory'}
                                 className="h-full w-full object-cover"
+                                onError={() => setImageError(true)}
                             />
                         ) : (
-                            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200">
-                                <span className="text-sm text-stone-400">No image</span>
+                            <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-stone-100 to-stone-200">
+                                <ImageOff className="h-8 w-8 text-stone-400" />
+                                <span className="text-xs text-stone-400">
+                                    {imageError ? 'Failed to load' : 'No image'}
+                                </span>
                             </div>
                         )}
                     </div>
                 </div>
 
-                <div className="px-3 pb-4 pt-3">
+                <div className="px-3 pt-3 pb-4">
                     {memory.caption && (
                         <p
                             className="text-center text-base leading-relaxed text-stone-700"

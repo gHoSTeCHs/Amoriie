@@ -7,9 +7,14 @@ import type { PolaroidFinalMessage } from '../schema';
 export type FinalScreenProps = {
     recipientName: string;
     senderName: string;
-    finalMessage: PolaroidFinalMessage;
+    finalMessage?: PolaroidFinalMessage | null;
     theme: ViewerTheme;
     onResponse: (response: ViewerResponse) => void;
+};
+
+const DEFAULT_FINAL_MESSAGE: PolaroidFinalMessage = {
+    text: '',
+    ask_text: 'Will you be my Valentine?',
 };
 
 const containerVariants = {
@@ -52,6 +57,7 @@ export function FinalScreen({
     theme,
     onResponse,
 }: FinalScreenProps) {
+    const safeMessage = finalMessage ?? DEFAULT_FINAL_MESSAGE;
     const textColor = theme.isDarkBackground ? 'text-stone-100' : 'text-stone-800';
     const mutedTextColor = theme.isDarkBackground ? 'text-stone-300' : 'text-stone-600';
 
@@ -74,20 +80,22 @@ export function FinalScreen({
                 Dear {recipientName},
             </motion.p>
 
-            <motion.p
-                variants={itemVariants}
-                className={`mb-8 max-w-sm text-center text-lg leading-relaxed ${textColor}`}
-                style={{ fontFamily: theme.fontFamily }}
-            >
-                {finalMessage.text}
-            </motion.p>
+            {safeMessage.text && (
+                <motion.p
+                    variants={itemVariants}
+                    className={`mb-8 max-w-sm text-center text-lg leading-relaxed ${textColor}`}
+                    style={{ fontFamily: theme.fontFamily }}
+                >
+                    {safeMessage.text}
+                </motion.p>
+            )}
 
             <motion.p
                 variants={itemVariants}
                 className={`mb-10 text-center text-2xl font-medium ${textColor}`}
                 style={{ fontFamily: theme.fontFamily }}
             >
-                {finalMessage.ask_text}
+                {safeMessage.ask_text}
             </motion.p>
 
             <motion.div variants={itemVariants} className="flex flex-col gap-4 sm:flex-row">

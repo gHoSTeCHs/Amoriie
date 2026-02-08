@@ -20,6 +20,7 @@ Route::get('dashboard', function () {
 
 Route::prefix('create')->name('create.')->group(function (): void {
     Route::get('/', [ValentineController::class, 'index'])->name('index');
+    Route::get('/success/{slug}', [ValentineController::class, 'success'])->name('success');
     Route::get('/{templateId}', [ValentineController::class, 'builder'])->name('builder');
     Route::get('/{templateId}/preview', [ValentineController::class, 'preview'])->name('preview');
 });
@@ -46,7 +47,9 @@ Route::prefix('api')->group(function (): void {
 
 Route::get('for/{slug}', [ValentineController::class, 'show'])->name('valentine.show');
 
-Route::get('stats/{secret}', [StatsController::class, 'show'])->name('stats.show');
+Route::get('stats/{secret}', [StatsController::class, 'show'])
+    ->middleware('throttle:60,1')
+    ->name('stats.show');
 
 if (app()->isLocal()) {
     Route::prefix('preview')->name('preview.')->group(function (): void {

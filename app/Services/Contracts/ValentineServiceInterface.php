@@ -2,56 +2,46 @@
 
 namespace App\Services\Contracts;
 
-use App\Enums\ValentineResponse;
 use App\Models\Valentine;
 
 interface ValentineServiceInterface
 {
     /**
-     * Create a new valentine.
+     * Create and immediately publish a new valentine.
+     *
+     * Note: In MVP, valentines are published immediately upon creation.
+     * The separate publish() method exists for future draft functionality.
      *
      * @param  array<string, mixed>  $data
      * @param  array<\Illuminate\Http\UploadedFile>  $mediaFiles
      */
     public function createValentine(array $data, array $mediaFiles = []): Valentine;
 
-    /**
-     * Find a valentine by its public slug.
-     */
     public function findBySlug(string $slug): ?Valentine;
 
-    /**
-     * Find a valentine by its stats secret.
-     */
     public function findByStatsSecret(string $secret): ?Valentine;
 
-    /**
-     * Record a view for a valentine.
-     */
-    public function recordView(Valentine $valentine, string $fingerprint): void;
+    public function recordView(Valentine $valentine, ?string $fingerprint): void;
 
-    /**
-     * Record progress through the valentine experience.
-     */
     public function recordProgress(
         Valentine $valentine,
-        int $timeSpent,
-        ?string $lastSection,
-        bool $completed
+        string $section,
+        ?int $memoryIndex,
+        ?string $fingerprint
     ): void;
 
     /**
-     * Record the recipient's response.
+     * @param  string  $response  The response value ('yes' or 'no') - converted to enum internally
      */
-    public function recordResponse(Valentine $valentine, ValentineResponse $response): void;
+    public function recordResponse(Valentine $valentine, string $response): void;
 
     /**
-     * Publish a valentine (makes it accessible via slug).
+     * Publish a draft valentine.
+     *
+     * Note: Currently unused in MVP as createValentine() publishes immediately.
+     * Reserved for future draft/preview functionality.
      */
     public function publish(Valentine $valentine): Valentine;
 
-    /**
-     * Generate a unique stats secret.
-     */
     public function generateStatsSecret(): string;
 }

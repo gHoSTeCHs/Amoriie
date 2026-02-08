@@ -1,13 +1,5 @@
 import { motion } from 'framer-motion';
-import {
-    Check,
-    Eye,
-    Image,
-    Music,
-    Palette,
-    Send,
-    User,
-} from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useRef, useEffect } from 'react';
 
 import type { BuilderStep } from '@/lib/constants';
@@ -17,15 +9,6 @@ import { cn } from '@/lib/utils';
 type StepIndicatorProps = {
     currentStep: BuilderStep;
     onStepClick?: (step: BuilderStep) => void;
-};
-
-const iconMap: Record<string, typeof Image> = {
-    Image,
-    Palette,
-    Music,
-    User,
-    Eye,
-    Send,
 };
 
 export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) {
@@ -61,7 +44,7 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
                 className="scrollbar-hide flex gap-1 overflow-x-auto px-4 py-3 sm:justify-center sm:gap-2"
             >
                 {BUILDER_STEPS.map((step, index) => {
-                    const Icon = iconMap[step.icon] || Image;
+                    const Icon = step.icon;
                     const isCompleted = index < currentIndex;
                     const isCurrent = index === currentIndex;
                     const isFuture = index > currentIndex;

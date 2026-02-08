@@ -2,36 +2,59 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Slug\CheckSlugRequest;
+use App\Http\Requests\Slug\SuggestSlugRequest;
+use App\Services\Contracts\SlugServiceInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class SlugController extends Controller
 {
-    /**
-     * Check if a slug is available.
-     */
-    public function check(Request $request): JsonResponse
+    public function __construct(
+        private SlugServiceInterface $slugService
+    ) {}
+
+    public function check(CheckSlugRequest $request): JsonResponse
     {
-        $slug = $request->input('slug', '');
+        $slug = $request->validated('slug');
+        $normalized = $this->slugService->normalize($slug);
+        $validation = $this->slugService->validate($normalized);
+
+        if (! $validation['valid']) {
+            return response()->json([
+                'slug' => $slug,
+                'normalized_slug' => $normalized,
+                'available' => false,
+                'errors' => $validation['errors'],
+                'suggestions' => [],
+            ]);
+        }
+
+        $available = $this->slugService->isAvailable($normalized);
+        $suggestions = [];
+
+        if (! $available) {
+            $suggestions = $this->slugService->generateSuggestions($normalized, 5);
+        }
 
         return response()->json([
             'slug' => $slug,
-            'available' => true,
-            'message' => 'Slug availability check not yet implemented',
+            'normalized_slug' => $normalized,
+            'available' => $available,
+            'errors' => [],
+            'suggestions' => $suggestions,
         ]);
     }
 
-    /**
-     * Generate slug suggestions based on a name.
-     */
-    public function suggestions(Request $request): JsonResponse
+    public function suggestions(SuggestSlugRequest $request): JsonResponse
     {
-        $name = $request->input('name', '');
+        $name = $request->validated('name');
+        $count = $request->validated('count', 5);
+
+        $suggestions = $this->slugService->generateSuggestions($name, $count);
 
         return response()->json([
             'name' => $name,
-            'suggestions' => [],
-            'message' => 'Slug suggestions not yet implemented',
+            'suggestions' => $suggestions,
         ]);
     }
 }

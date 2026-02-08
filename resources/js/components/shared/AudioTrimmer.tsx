@@ -4,6 +4,8 @@ import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js';
 import { AudioLibraryPicker } from '@/components/shared/AudioLibraryPicker';
 import { extractRegion } from '@/lib/audioEncoder';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/logger';
+import { MEDIA_CONSTRAINTS } from '@/lib/constraints';
 import type { AudioTrack } from '@/types/audio';
 
 type AudioTrimmerProps = {
@@ -128,6 +130,7 @@ export function AudioTrimmer({
     const regionsRef = useRef<RegionsPlugin | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const playIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const regionEndRef = useRef(regionEnd);
 
     const notes = ['♪', '♫', '♬', '♩'];
     const floatingNotes = Array.from({ length: 8 }, (_, i) => ({
@@ -146,6 +149,10 @@ export function AudioTrimmer({
             }
         };
     }, []);
+
+    useEffect(() => {
+        regionEndRef.current = regionEnd;
+    }, [regionEnd]);
 
     const initializeWavesurfer = useCallback(
         async (audioFile: File | string) => {
@@ -235,7 +242,7 @@ export function AudioTrimmer({
             ws.on('error', (err) => {
                 setIsLoading(false);
                 setError('Failed to decode audio. Please try a different file.');
-                console.error('Wavesurfer error:', err);
+                logger.error('Wavesurfer error:', err);
             });
 
             ws.on('play', () => setIsPlaying(true));
@@ -264,7 +271,7 @@ export function AudioTrimmer({
             } catch (err) {
                 setIsLoading(false);
                 setError('Failed to load audio file. Please try again.');
-                console.error('Load error:', err);
+                logger.error('Load error:', err);
             }
         },
         [maxDurationSeconds]
@@ -286,8 +293,8 @@ export function AudioTrimmer({
             }
 
             const sizeMB = selectedFile.size / (1024 * 1024);
-            if (sizeMB > 50) {
-                setError('Audio file must be smaller than 50MB');
+            if (sizeMB > MEDIA_CONSTRAINTS.AUDIO_MAX_SIZE_MB) {
+                setError(`Audio file must be smaller than ${MEDIA_CONSTRAINTS.AUDIO_MAX_SIZE_MB}MB`);
                 return;
             }
 
@@ -352,7 +359,7 @@ export function AudioTrimmer({
             playIntervalRef.current = setInterval(() => {
                 if (wavesurferRef.current) {
                     const currentTime = wavesurferRef.current.getCurrentTime();
-                    if (currentTime >= regionEnd) {
+                    if (currentTime >= regionEndRef.current) {
                         wavesurferRef.current.pause();
                         if (playIntervalRef.current) {
                             clearInterval(playIntervalRef.current);
@@ -362,7 +369,7 @@ export function AudioTrimmer({
                 }
             }, 50);
         }
-    }, [isPlaying, regionStart, regionEnd]);
+    }, [isPlaying, regionStart]);
 
     const handleSave = useCallback(async () => {
         if (!file && !libraryTrack) return;
@@ -388,7 +395,7 @@ export function AudioTrimmer({
             onSave(trimmedBlob, filename);
         } catch (err) {
             setError('Failed to process audio. Please try again.');
-            console.error(err);
+            logger.error('Audio processing error:', err);
         } finally {
             setIsProcessing(false);
         }
@@ -422,9 +429,20 @@ export function AudioTrimmer({
     const hasAudio = file || libraryTrack;
     const audioName = file?.name || libraryTrack?.name || '';
 
+    const getAriaStatus = () => {
+        if (isLoading) return 'Loading audio waveform';
+        if (isProcessing) return 'Processing audio clip';
+        if (error) return `Error: ${error}`;
+        if (hasAudio) return `Audio loaded. ${formatTime(selectedDuration)} selected for trimming`;
+        return '';
+    };
+
     if (!hasAudio) {
         return (
             <div className={cn('space-y-4', className)} ref={containerRef}>
+                <div aria-live="polite" aria-atomic="true" className="sr-only">
+                    {getAriaStatus()}
+                </div>
                 <input
                     ref={inputRef}
                     type="file"
@@ -505,7 +523,7 @@ export function AudioTrimmer({
 
                         <div className="mt-4 flex items-center gap-2 text-white/30 text-xs">
                             <MusicNoteIcon className="h-3 w-3" />
-                            <span>Max {maxDurationSeconds}s clip • 50MB limit</span>
+                            <span>Max {maxDurationSeconds}s clip • {MEDIA_CONSTRAINTS.AUDIO_MAX_SIZE_MB}MB limit</span>
                         </div>
                     </div>
                 </button>
@@ -545,6 +563,9 @@ export function AudioTrimmer({
 
     return (
         <div className={cn('space-y-4', className)} ref={containerRef}>
+            <div aria-live="polite" aria-atomic="true" className="sr-only">
+                {getAriaStatus()}
+            </div>
             <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0c0607]">
                 <div className="absolute inset-0 bg-gradient-to-b from-rose-500/5 to-transparent pointer-events-none" />
 

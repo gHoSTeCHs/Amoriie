@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Heart, X } from 'lucide-react';
+import { Heart, RotateCcw, X } from 'lucide-react';
+import { useEffect } from 'react';
 
 import { BuilderNavigation } from '@/components/builder/builder-navigation';
 import { StepIndicator } from '@/components/builder/step-indicator';
@@ -13,6 +14,7 @@ type BuilderLayoutProps = {
     showNavigation?: boolean;
     onBack?: () => void;
     onContinue?: () => void;
+    onStartOver?: () => void;
     canContinue?: boolean;
     isLoading?: boolean;
     title?: string;
@@ -25,10 +27,15 @@ export default function BuilderLayout({
     showNavigation = true,
     onBack,
     onContinue,
+    onStartOver,
     canContinue = true,
     isLoading = false,
     title = 'Create Your Valentine',
 }: BuilderLayoutProps) {
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [currentStep]);
+
     return (
         <>
             <Head title={title}>
@@ -60,12 +67,25 @@ export default function BuilderLayout({
                             </span>
                         </Link>
 
-                        <Link
-                            href="/"
-                            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-rose-100/60 transition-all hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-white"
-                        >
-                            <X className="h-5 w-5" />
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            {onStartOver && (
+                                <button
+                                    type="button"
+                                    onClick={onStartOver}
+                                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-rose-100/60 transition-all hover:border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-400"
+                                    aria-label="Start over"
+                                    title="Start over"
+                                >
+                                    <RotateCcw className="h-4 w-4" />
+                                </button>
+                            )}
+                            <Link
+                                href="/"
+                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-rose-100/60 transition-all hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-white"
+                            >
+                                <X className="h-5 w-5" />
+                            </Link>
+                        </div>
                     </div>
 
                     <StepIndicator currentStep={currentStep} onStepClick={onStepClick} />

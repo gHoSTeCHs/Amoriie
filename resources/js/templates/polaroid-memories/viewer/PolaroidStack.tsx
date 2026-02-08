@@ -8,6 +8,7 @@ import {
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
+import { POLAROID_VIEWER } from '@/lib/constants';
 import type { ViewerTheme } from '@/types/viewer';
 import type { PolaroidMemory } from '../schema';
 import { PolaroidCard } from './PolaroidCard';
@@ -18,9 +19,6 @@ export type PolaroidStackProps = {
     onProgress?: (index: number) => void;
     onComplete: () => void;
 };
-
-const SWIPE_THRESHOLD = 50;
-const VELOCITY_THRESHOLD = 500;
 
 export function PolaroidStack({ memories, theme, onProgress, onComplete }: PolaroidStackProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,8 +33,8 @@ export function PolaroidStack({ memories, theme, onProgress, onComplete }: Polar
 
     function handleDragEnd(_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) {
         const shouldSwipe =
-            Math.abs(info.offset.x) > SWIPE_THRESHOLD ||
-            Math.abs(info.velocity.x) > VELOCITY_THRESHOLD;
+            Math.abs(info.offset.x) > POLAROID_VIEWER.swipeThreshold ||
+            Math.abs(info.velocity.x) > POLAROID_VIEWER.velocityThreshold;
 
         if (shouldSwipe) {
             const direction = info.offset.x > 0 ? 'right' : 'left';
@@ -169,10 +167,17 @@ export function PolaroidStack({ memories, theme, onProgress, onComplete }: Polar
                     <ChevronLeft className="h-6 w-6" />
                 </button>
 
-                <div className="flex items-center gap-2">
+                <div
+                    className="flex items-center gap-2"
+                    role="tablist"
+                    aria-label="Memory progress"
+                >
                     {memories.map((_, index) => (
                         <motion.div
                             key={index}
+                            role="tab"
+                            aria-selected={index === currentIndex}
+                            aria-label={`Memory ${index + 1} of ${memories.length}`}
                             className={`h-2 w-2 rounded-full transition-colors ${
                                 index === currentIndex
                                     ? 'bg-rose-500'

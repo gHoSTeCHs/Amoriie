@@ -27,6 +27,7 @@
         "typescript-eslint": "^8.23.0"
     },
     "dependencies": {
+        "@breezystack/lamejs": "^1.2.7",
         "@headlessui/react": "^2.2.0",
         "@inertiajs/react": "^2.3.7",
         "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -57,7 +58,6 @@
         "framer-motion": "^12.31.0",
         "globals": "^15.14.0",
         "input-otp": "^1.4.2",
-        "lamejs": "^1.2.1",
         "laravel-vite-plugin": "^2.0",
         "lucide-react": "^0.475.0",
         "nanoid": "^5.1.6",

@@ -18,7 +18,7 @@ function TemplateCard({ template, index }: { template: Template; index: number }
         >
             <Link
                 href={builder.url(template.id)}
-                className="group relative block overflow-hidden rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-sm transition-all duration-500 hover:border-rose-500/30 hover:bg-white/[0.04]"
+                className="group relative block overflow-hidden rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-sm transition-all duration-500 hover:border-rose-500/30 hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0607]"
             >
                 <div className="absolute -inset-px rounded-3xl bg-gradient-to-b from-rose-500/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
@@ -166,7 +166,7 @@ export default function TemplateSelection({ templates }: Props) {
                                 </p>
                             </motion.div>
                         ) : (
-                            <div className="grid gap-6 sm:grid-cols-2">
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                 {templates.map((template, index) => (
                                     <TemplateCard
                                         key={template.id}

@@ -19,7 +19,13 @@ type ImageUploaderProps = {
     currentImage?: string;
     onRemove?: () => void;
     className?: string;
+    uploadedHashes?: Set<string>;
+    onHashGenerated?: (hash: string) => void;
 };
+
+function generateFileHash(file: File): string {
+    return `${file.name}-${file.size}-${file.lastModified}`;
+}
 
 function FloatingHeart({ delay, duration, left }: { delay: number; duration: number; left: number }) {
     return (
@@ -134,6 +140,8 @@ export function ImageUploader({
     currentImage,
     onRemove,
     className,
+    uploadedHashes = new Set(),
+    onHashGenerated,
 }: ImageUploaderProps) {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(currentImage || null);
@@ -160,9 +168,23 @@ export function ImageUploader({
         }
     }, [currentImage, previewUrl]);
 
+    useEffect(() => {
+        return () => {
+            if (previewUrl && previewUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
+
     const handleFileSelect = useCallback(
         (file: File) => {
             setError(null);
+
+            const hash = generateFileHash(file);
+            if (uploadedHashes.has(hash)) {
+                setError('This image has already been added');
+                return;
+            }
 
             if (!file.type.startsWith('image/')) {
                 setError('Please select an image file');
@@ -175,6 +197,7 @@ export function ImageUploader({
                 return;
             }
 
+            onHashGenerated?.(hash);
             setSelectedFile(file);
 
             const url = URL.createObjectURL(file);
@@ -186,7 +209,7 @@ export function ImageUploader({
                 onUpload(file);
             }
         },
-        [maxSizeMb, showCrop, onUpload]
+        [maxSizeMb, showCrop, onUpload, uploadedHashes, onHashGenerated]
     );
 
     const handleInputChange = useCallback(
@@ -411,6 +434,7 @@ export function ImageUploader({
                         'relative flex aspect-square w-full flex-col items-center justify-center rounded-2xl',
                         'border-2 border-dashed transition-all duration-500',
                         'overflow-hidden group',
+                        'focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0607]',
                         isDragging
                             ? 'border-rose-400 bg-rose-500/10'
                             : 'border-white/10 bg-white/[0.02] hover:border-rose-400/50 hover:bg-rose-500/5'

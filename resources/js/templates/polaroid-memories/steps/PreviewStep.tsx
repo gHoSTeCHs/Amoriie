@@ -52,7 +52,7 @@ export function PreviewStep() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
             >
-                <div className="absolute inset-0 overflow-auto">
+                <div className="absolute inset-0 overflow-auto scrollbar-thin">
                     <PolaroidViewer
                         key={key}
                         customizations={customizations}

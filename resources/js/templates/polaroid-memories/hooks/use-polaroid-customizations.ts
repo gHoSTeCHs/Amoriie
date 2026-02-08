@@ -4,7 +4,8 @@ import type { PolaroidCustomizations, PolaroidMemory, PolaroidTheme, PolaroidFin
 import { getDefaultPolaroidCustomizations, createEmptyMemory, POLAROID_LIMITS } from '../schema';
 
 export function usePolaroidCustomizations() {
-    const customizations = useBuilderCustomizations() as Partial<PolaroidCustomizations>;
+    const rawCustomizations = useBuilderCustomizations();
+    const customizations = (rawCustomizations ?? {}) as Partial<PolaroidCustomizations>;
     const { updateCustomizations } = useBuilderStore();
 
     const defaults = useMemo(() => getDefaultPolaroidCustomizations(), []);

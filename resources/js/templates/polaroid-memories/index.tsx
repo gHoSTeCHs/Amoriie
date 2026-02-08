@@ -8,6 +8,7 @@ import { ContentStep } from './steps/ContentStep';
 import { DetailsStep } from './steps/DetailsStep';
 import { MusicStep } from './steps/MusicStep';
 import { PreviewStep } from './steps/PreviewStep';
+import { PublishStep } from './steps/PublishStep';
 import { StyleStep } from './steps/StyleStep';
 import { TemplateViewer } from './viewer/TemplateViewer';
 
@@ -37,11 +38,7 @@ function PolaroidBuilder({ onStepComplete }: TemplateBuilderProps) {
             case 'preview':
                 return <PreviewStep />;
             case 'publish':
-                return (
-                    <div className="flex min-h-[300px] items-center justify-center text-rose-100/60">
-                        <p>Publish coming in Phase 6</p>
-                    </div>
-                );
+                return <PublishStep />;
             default:
                 return null;
         }
@@ -53,7 +50,7 @@ function PolaroidBuilder({ onStepComplete }: TemplateBuilderProps) {
 const polaroidMemoriesModule: TemplateModule = {
     Builder: PolaroidBuilder,
     Viewer: TemplateViewer,
-    getDefaultCustomizations: getDefaultPolaroidCustomizations as () => Record<string, unknown>,
+    getDefaultCustomizations: getDefaultPolaroidCustomizations,
 };
 
 export default polaroidMemoriesModule;

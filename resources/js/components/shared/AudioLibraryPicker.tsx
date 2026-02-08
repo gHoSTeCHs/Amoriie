@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-media-query';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 import type { AudioTrack, AudioLibraryResponse } from '@/types/audio';
 
 type AudioLibraryPickerProps = {
@@ -219,21 +220,6 @@ function EmptyState() {
     );
 }
 
-const scrollbarStyles = `
-    .audio-library-scroll::-webkit-scrollbar {
-        width: 4px;
-    }
-    .audio-library-scroll::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    .audio-library-scroll::-webkit-scrollbar-thumb {
-        background: rgba(251, 113, 133, 0.3);
-        border-radius: 4px;
-    }
-    .audio-library-scroll::-webkit-scrollbar-thumb:hover {
-        background: rgba(251, 113, 133, 0.5);
-    }
-`;
 
 type AudioLibraryContentProps = {
     tracks: AudioTrack[];
@@ -255,12 +241,10 @@ function AudioLibraryContent({
     isMobile,
 }: AudioLibraryContentProps) {
     return (
-        <>
-            <style>{scrollbarStyles}</style>
-            <div className={cn(
-                'audio-library-scroll overflow-y-auto pr-1 -mr-1',
-                isMobile ? 'max-h-[60vh] pb-6' : 'max-h-[50vh]'
-            )}>
+        <div className={cn(
+            'overflow-y-auto scrollbar-thin pr-1 -mr-1',
+            isMobile ? 'max-h-[60vh] pb-6' : 'max-h-[50vh]'
+        )}>
                 <div className="space-y-2">
                     {isLoading && <LoadingSkeleton />}
 
@@ -282,9 +266,8 @@ function AudioLibraryContent({
                             onSelect={() => onSelect(track)}
                         />
                     ))}
-                </div>
             </div>
-        </>
+        </div>
     );
 }
 
@@ -357,7 +340,7 @@ export function AudioLibraryPicker({
             setTracks(data.tracks);
         } catch (err) {
             setError('Unable to load music library');
-            console.error('Error loading audio library:', err);
+            logger.error('Error loading audio library:', err);
         } finally {
             setIsLoading(false);
         }

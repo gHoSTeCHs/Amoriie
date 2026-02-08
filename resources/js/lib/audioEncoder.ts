@@ -22,7 +22,7 @@ export async function encodeToMp3(
     audioBuffer: AudioBuffer,
     bitrate: number = DEFAULT_BITRATE
 ): Promise<Blob> {
-    const { Mp3Encoder } = await import('lamejs');
+    const { Mp3Encoder } = await import('@breezystack/lamejs');
 
     const channels = audioBuffer.numberOfChannels;
     const sampleRate = audioBuffer.sampleRate;
