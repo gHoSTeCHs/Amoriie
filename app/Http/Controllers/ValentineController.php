@@ -12,6 +12,7 @@ use App\Services\Contracts\ValentineServiceInterface;
 use App\Services\R2StorageService;
 use App\Services\ValentineService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -25,10 +26,12 @@ class ValentineController extends Controller
 
     public function index(): Response
     {
-        $templates = Template::query()
-            ->active()
-            ->ordered()
-            ->get();
+        $templates = Cache::remember('templates.active', 3600, function () {
+            return Template::query()
+                ->active()
+                ->ordered()
+                ->get();
+        });
 
         return Inertia::render('create/index', [
             'templates' => $templates,
@@ -37,10 +40,16 @@ class ValentineController extends Controller
 
     public function builder(string $templateId): Response
     {
-        $template = Template::query()
-            ->where('id', $templateId)
-            ->active()
-            ->firstOrFail();
+        $template = Cache::remember("template.{$templateId}", 3600, function () use ($templateId) {
+            return Template::query()
+                ->where('id', $templateId)
+                ->active()
+                ->first();
+        });
+
+        if (! $template) {
+            abort(404);
+        }
 
         return Inertia::render('create/builder', [
             'template' => $template,
@@ -49,10 +58,12 @@ class ValentineController extends Controller
 
     public function preview(string $templateId): Response
     {
-        $template = Template::query()
-            ->where('id', $templateId)
-            ->active()
-            ->first();
+        $template = Cache::remember("template.{$templateId}", 3600, function () use ($templateId) {
+            return Template::query()
+                ->where('id', $templateId)
+                ->active()
+                ->first();
+        });
 
         if (! $template) {
             abort(404);

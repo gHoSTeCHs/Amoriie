@@ -47,7 +47,7 @@ export async function encodeToMp3(
     for (let i = 0; i < numSamples; i += MP3_FRAME_SIZE) {
         const leftChunk = leftInt16.subarray(i, Math.min(i + MP3_FRAME_SIZE, numSamples));
 
-        let mp3buf: Int8Array;
+        let mp3buf: Uint8Array;
         if (rightInt16) {
             const rightChunk = rightInt16.subarray(i, Math.min(i + MP3_FRAME_SIZE, numSamples));
             mp3buf = encoder.encodeBuffer(leftChunk, rightChunk);

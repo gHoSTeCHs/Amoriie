@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamp('expires_at')->nullable();
             $table->unsignedBigInteger('view_count')->default(0);
             $table->unsignedBigInteger('unique_view_count')->default(0);
-            $table->unsignedTinyInteger('furthest_progress')->default(0);
+            $table->unsignedSmallInteger('furthest_progress')->default(0);
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
             $table->softDeletes();

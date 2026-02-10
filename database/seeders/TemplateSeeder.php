@@ -100,6 +100,53 @@ class TemplateSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'id' => 'love-letter',
+                'name' => 'Love Letter',
+                'category' => TemplateCategory::Interactive->value,
+                'description' => 'A heartfelt letter sealed with love, revealed with elegant animations across 6 stunning themes.',
+                'thumbnail_url' => null,
+                'preview_url' => null,
+                'schema' => json_encode([
+                    'themes' => [
+                        'midnight-candlelight',
+                        'vintage-telegram',
+                        'royal-elegance',
+                        'garden-romance',
+                        'modern-minimal',
+                        'parisian-cafe',
+                    ],
+                    'letter' => [
+                        'min_length' => 50,
+                        'max_length' => 2000,
+                    ],
+                    'audio' => [
+                        'allow_background_music' => true,
+                        'max_duration_seconds' => 180,
+                    ],
+                ]),
+                'default_customizations' => json_encode([
+                    'theme_id' => 'midnight-candlelight',
+                    'letter_text' => '',
+                    'letter_date' => null,
+                    'customization' => [
+                        'paper_color' => '#f5f0e1',
+                        'ink_color' => '#2d1810',
+                        'seal_color' => '#8b0000',
+                        'signature_style' => 'handwritten',
+                        'animation_speed' => 'normal',
+                        'sounds_enabled' => true,
+                        'show_borders' => true,
+                        'show_drop_cap' => true,
+                        'show_flourishes' => true,
+                    ],
+                ]),
+                'is_active' => true,
+                'is_premium' => false,
+                'sort_order' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ], ['id'], ['name', 'category', 'description', 'schema', 'default_customizations', 'is_active', 'is_premium', 'sort_order', 'updated_at']);
     }
 }

@@ -6,6 +6,10 @@ final class ViewerSections
 {
     public const INTRO = 'intro';
 
+    public const ENVELOPE = 'envelope';
+
+    public const LETTER = 'letter';
+
     public const MEMORIES = 'memories';
 
     public const FINAL = 'final';
@@ -16,10 +20,12 @@ final class ViewerSections
 
     public const SECTION_ORDER = [
         self::INTRO => 0,
-        self::MEMORIES => 1,
-        self::FINAL => 2,
-        self::CELEBRATION => 3,
-        self::DECLINED => 3,
+        self::ENVELOPE => 1,
+        self::LETTER => 2,
+        self::MEMORIES => 3,
+        self::FINAL => 4,
+        self::CELEBRATION => 5,
+        self::DECLINED => 5,
     ];
 
     public const TERMINAL_SECTIONS = [

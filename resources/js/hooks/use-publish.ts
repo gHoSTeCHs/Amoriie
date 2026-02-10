@@ -3,15 +3,25 @@ import { nanoid } from 'nanoid';
 import { store } from '@/actions/App/Http/Controllers/ValentineController';
 import type { PublishResult, UploadItem } from '@/types/publish';
 import type { PolaroidCustomizations } from '@/templates/polaroid-memories/schema';
+import type { LoveLetterCustomizations } from '@/templates/love-letter/schema';
+import type { AnyTemplateCustomizations } from '@/types/customizations';
 import { apiPostFormData, ApiError, getErrorMessage } from '@/lib/api-client';
 
 type PublishOptions = {
     templateId: string;
     slug: string;
-    customizations: PolaroidCustomizations;
+    customizations: AnyTemplateCustomizations;
     creatorEmail?: string;
     notifyOnResponse?: boolean;
 };
+
+function isPolaroidCustomizations(c: AnyTemplateCustomizations): c is PolaroidCustomizations {
+    return 'memories' in c && Array.isArray((c as PolaroidCustomizations).memories);
+}
+
+function isLoveLetterCustomizations(c: AnyTemplateCustomizations): c is LoveLetterCustomizations {
+    return 'letter_text' in c && 'theme_id' in c;
+}
 
 type UsePublishReturn = {
     isPublishing: boolean;
@@ -47,34 +57,42 @@ export function usePublish(): UsePublishReturn {
         []
     );
 
-    const collectMediaFiles = useCallback((customizations: PolaroidCustomizations) => {
+    const collectMediaFiles = useCallback((customizations: AnyTemplateCustomizations) => {
         const items: UploadItem[] = [];
         const files: { images: Array<{ file: File; memoryIndex: number }>; audio: File | null } = { images: [], audio: null };
 
-        customizations.memories.forEach((memory, memoryIndex) => {
-            if (memory.image_file) {
-                const id = nanoid();
-                items.push({
-                    id,
-                    name: memory.caption || `Photo ${memoryIndex + 1}`,
-                    type: 'image',
-                    status: 'pending',
-                    progress: 0,
-                });
-                files.images.push({ file: memory.image_file, memoryIndex });
-            }
-        });
+        if (isPolaroidCustomizations(customizations)) {
+            customizations.memories.forEach((memory, memoryIndex) => {
+                if (memory.image_file) {
+                    const id = nanoid();
+                    items.push({
+                        id,
+                        name: memory.caption || `Photo ${memoryIndex + 1}`,
+                        type: 'image',
+                        status: 'pending',
+                        progress: 0,
+                    });
+                    files.images.push({ file: memory.image_file, memoryIndex });
+                }
+            });
+        }
 
-        if (customizations.audio.trimmed_blob || customizations.audio.background_music_file) {
+        const audioSource = isPolaroidCustomizations(customizations)
+            ? customizations.audio
+            : isLoveLetterCustomizations(customizations)
+              ? customizations.audio
+              : null;
+
+        if (audioSource && (audioSource.trimmed_blob || audioSource.background_music_file)) {
             const id = nanoid();
             const audioFile =
-                customizations.audio.trimmed_blob instanceof Blob
+                audioSource.trimmed_blob instanceof Blob
                     ? new File(
-                          [customizations.audio.trimmed_blob],
-                          customizations.audio.filename || 'background-music.mp3',
+                          [audioSource.trimmed_blob],
+                          audioSource.filename || 'background-music.mp3',
                           { type: 'audio/mpeg' }
                       )
-                    : customizations.audio.background_music_file;
+                    : audioSource.background_music_file;
 
             if (audioFile) {
                 items.push({
@@ -100,8 +118,6 @@ export function usePublish(): UsePublishReturn {
 
             formData.append('template_id', options.templateId);
             formData.append('slug', options.slug);
-            formData.append('recipient_name', options.customizations.recipient_name);
-            formData.append('sender_name', options.customizations.sender_name);
 
             if (options.creatorEmail) {
                 formData.append('creator_email', options.creatorEmail);
@@ -109,17 +125,35 @@ export function usePublish(): UsePublishReturn {
 
             formData.append('notify_on_response', options.notifyOnResponse ? '1' : '0');
 
-            const cleanCustomizations = {
-                ...options.customizations,
-                memories: options.customizations.memories.map(({ image_file, ...rest }) => rest),
-                audio: {
-                    background_music: options.customizations.audio.background_music,
-                },
-                yes_response: {
-                    ...options.customizations.yes_response,
-                    reveal_photo_file: undefined,
-                },
-            };
+            let cleanCustomizations: Record<string, unknown>;
+
+            if (isPolaroidCustomizations(options.customizations)) {
+                formData.append('recipient_name', options.customizations.recipient_name);
+                formData.append('sender_name', options.customizations.sender_name);
+                cleanCustomizations = {
+                    ...options.customizations,
+                    memories: options.customizations.memories.map(({ image_file, ...rest }) => rest),
+                    audio: {
+                        background_music: options.customizations.audio.background_music,
+                    },
+                    yes_response: {
+                        ...options.customizations.yes_response,
+                        reveal_photo_file: undefined,
+                    },
+                };
+            } else if (isLoveLetterCustomizations(options.customizations)) {
+                formData.append('recipient_name', options.customizations.recipient_name);
+                formData.append('sender_name', options.customizations.sender_name);
+                cleanCustomizations = {
+                    ...options.customizations,
+                    audio: {
+                        background_music: options.customizations.audio.background_music,
+                    },
+                };
+            } else {
+                cleanCustomizations = options.customizations as Record<string, unknown>;
+            }
+
             formData.append('customizations', JSON.stringify(cleanCustomizations));
 
             files.images.forEach((item, index) => {

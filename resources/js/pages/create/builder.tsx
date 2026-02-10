@@ -35,7 +35,7 @@ export default function Builder({ template }: Props) {
     const isDirty = useBuilderIsDirty();
     const currentStep = useBuilderStep();
     const canContinue = useBuilderCanContinue();
-    const { setCurrentStep, resetForTemplate, setIsDirty, updateCustomizations } = useBuilderStore();
+    const { setCurrentStep, resetForTemplate, setIsDirty, setCustomizations } = useBuilderStore();
 
     const [showSwitchDialog, setShowSwitchDialog] = useState(false);
     const [showStartOverDialog, setShowStartOverDialog] = useState(false);
@@ -49,7 +49,7 @@ export default function Builder({ template }: Props) {
             if (isTemplateRegistered(template.id)) {
                 resetForTemplate(template.id);
                 if (module) {
-                    updateCustomizations(module.getDefaultCustomizations());
+                    setCustomizations(module.getDefaultCustomizations());
                 }
                 setIsDirty(false);
             }
@@ -60,7 +60,7 @@ export default function Builder({ template }: Props) {
         if (module && !isDirty && storedTemplateId === template.id) {
             const currentCustomizations = useBuilderStore.getState().customizations;
             if (!currentCustomizations || Object.keys(currentCustomizations).length === 0) {
-                updateCustomizations(module.getDefaultCustomizations());
+                setCustomizations(module.getDefaultCustomizations());
             }
         }
     }, [module, isDirty, storedTemplateId, template.id]);
@@ -77,7 +77,7 @@ export default function Builder({ template }: Props) {
         if (isTemplateRegistered(template.id)) {
             resetForTemplate(template.id);
             if (module) {
-                updateCustomizations(module.getDefaultCustomizations());
+                setCustomizations(module.getDefaultCustomizations());
             }
             setIsDirty(false);
         }
@@ -96,7 +96,7 @@ export default function Builder({ template }: Props) {
         if (isTemplateRegistered(template.id)) {
             resetForTemplate(template.id);
             if (module) {
-                updateCustomizations(module.getDefaultCustomizations());
+                setCustomizations(module.getDefaultCustomizations());
             }
             setIsDirty(false);
             setCurrentStep('content');

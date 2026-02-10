@@ -26,6 +26,7 @@ type TemplateLoader = () => Promise<{ default: TemplateModule }>;
 
 const templateRegistry: Record<TemplateId, TemplateLoader> = {
     'polaroid-memories': () => import('./polaroid-memories/index'),
+    'love-letter': () => import('./love-letter/index'),
 };
 
 export function isTemplateRegistered(templateId: string): templateId is TemplateId {

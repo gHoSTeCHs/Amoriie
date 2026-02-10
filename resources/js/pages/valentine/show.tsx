@@ -1,18 +1,18 @@
 import { Link } from '@inertiajs/react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { HeartCrack, Home, Sparkles } from 'lucide-react';
-import { lazy, Suspense } from 'react';
 
 import { ExpiredScreen } from '@/components/valentine/ExpiredScreen';
 import { OgMeta } from '@/components/shared/OgMeta';
-import type { PolaroidCustomizations } from '@/templates/polaroid-memories/schema';
+import { useTemplateModule } from '@/templates/registry';
+import type { AnyTemplateCustomizations, TemplateId } from '@/types/customizations';
 
 type ValentineData = {
     id: string;
     slug: string;
     recipient_name: string;
-    template_id: string;
-    customizations: PolaroidCustomizations;
+    template_id: TemplateId;
+    customizations: AnyTemplateCustomizations;
 };
 
 type Props = {
@@ -24,14 +24,6 @@ type Props = {
     og_description?: string;
     public_url?: string;
 };
-
-const PolaroidViewer = lazy(() =>
-    import('@/templates/polaroid-memories/viewer/PolaroidViewer').then(
-        (mod) => ({
-            default: mod.PolaroidViewer,
-        }),
-    ),
-);
 
 function LoadingSpinner() {
     const shouldReduceMotion = useReducedMotion();
@@ -51,6 +43,69 @@ function LoadingSpinner() {
                     }}
                 />
             )}
+        </div>
+    );
+}
+
+function TemplateLoadError({ templateId }: { templateId: string }) {
+    const shouldReduceMotion = useReducedMotion();
+
+    return (
+        <div className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-[#0c0607] px-6 py-12">
+            <div
+                className="pointer-events-none absolute inset-0"
+                aria-hidden="true"
+                style={{
+                    background:
+                        'radial-gradient(ellipse at 50% 30%, rgba(159,18,57,0.15) 0%, transparent 60%)',
+                }}
+            />
+
+            <motion.div
+                initial={shouldReduceMotion ? undefined : { opacity: 0, y: 30 }}
+                animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+                transition={
+                    shouldReduceMotion
+                        ? undefined
+                        : { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
+                }
+                className="relative z-10 max-w-md text-center"
+            >
+                <div className="relative mx-auto mb-8 inline-flex">
+                    <div className="relative rounded-full border border-rose-500/20 bg-gradient-to-br from-rose-950/60 to-rose-900/40 p-6 backdrop-blur-sm">
+                        <HeartCrack
+                            className="h-12 w-12 text-rose-400"
+                            strokeWidth={1.5}
+                            aria-hidden="true"
+                        />
+                    </div>
+                </div>
+
+                <h1
+                    className="mb-4 text-3xl text-white md:text-4xl"
+                    style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontWeight: 500,
+                    }}
+                >
+                    Unable to Load Valentine
+                </h1>
+
+                <p
+                    className="mb-10 text-lg text-rose-100/70"
+                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                >
+                    We couldn&apos;t load the template &quot;{templateId}&quot;. Please try again later.
+                </p>
+
+                <Link
+                    href="/"
+                    className="inline-flex items-center gap-2 rounded-full border border-rose-500/20 bg-rose-500/5 px-6 py-3 text-sm text-rose-100/80 transition-all hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-white"
+                >
+                    <Home className="h-4 w-4" />
+                    Go Home
+                </Link>
+            </motion.div>
         </div>
     );
 }
@@ -193,6 +248,28 @@ function NotFoundScreen() {
     );
 }
 
+function DynamicTemplateViewer({ valentine }: { valentine: ValentineData }) {
+    const { module, isLoading, error } = useTemplateModule(valentine.template_id);
+
+    if (isLoading) {
+        return <LoadingSpinner />;
+    }
+
+    if (error || !module) {
+        return <TemplateLoadError templateId={valentine.template_id} />;
+    }
+
+    const ViewerComponent = module.Viewer;
+
+    return (
+        <ViewerComponent
+            template={{} as never}
+            customizations={valentine.customizations}
+            slug={valentine.slug}
+        />
+    );
+}
+
 export default function ValentineShow({
     valentine,
     error,
@@ -236,13 +313,11 @@ export default function ValentineShow({
         );
     }
 
-    const pageTitle = valentine.customizations.title
-        ? `${valentine.customizations.title} — Amoriie`
+    const pageTitle = (valentine.customizations as { title?: string }).title
+        ? `${(valentine.customizations as { title?: string }).title} — Amoriie`
         : `A Surprise for ${valentine.recipient_name} — Amoriie`;
 
     const pageDescription = `${valentine.recipient_name}, someone has created a special valentine just for you. Tap to see your surprise!`;
-
-    console.log(valentine.customizations);
 
     return (
         <>
@@ -253,12 +328,7 @@ export default function ValentineShow({
                 url={public_url ?? ''}
             />
 
-            <Suspense fallback={<LoadingSpinner />}>
-                <PolaroidViewer
-                    customizations={valentine.customizations}
-                    slug={valentine.slug}
-                />
-            </Suspense>
+            <DynamicTemplateViewer valentine={valentine} />
         </>
     );
 }

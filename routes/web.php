@@ -55,6 +55,7 @@ if (app()->isLocal()) {
     Route::prefix('preview')->name('preview.')->group(function (): void {
         Route::get('/image-uploader', fn () => Inertia::render('preview/image-uploader'))->name('image-uploader');
         Route::get('/audio-trimmer', fn () => Inertia::render('preview/audio-trimmer'))->name('audio-trimmer');
+        Route::get('/love-letter', fn () => Inertia::render('preview/love-letter-viewer'))->name('love-letter');
     });
 }
 

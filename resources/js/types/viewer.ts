@@ -1,6 +1,6 @@
 import type { PolaroidCustomizations } from '@/templates/polaroid-memories/schema';
 
-export type ViewerStage = 'intro' | 'memories' | 'final' | 'celebration' | 'declined';
+export type ViewerStage = 'intro' | 'envelope' | 'letter' | 'memories' | 'final' | 'celebration' | 'declined';
 
 export type ViewerResponse = 'yes' | 'no';
 

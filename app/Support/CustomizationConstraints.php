@@ -39,4 +39,21 @@ final class CustomizationConstraints
         'pacifico',
         'permanent-marker',
     ];
+
+    public const LETTER_TEXT_MIN_LENGTH = 50;
+
+    public const LETTER_TEXT_MAX_LENGTH = 2000;
+
+    public const VALID_LOVE_LETTER_THEMES = [
+        'midnight-candlelight',
+        'vintage-telegram',
+        'royal-elegance',
+        'garden-romance',
+        'modern-minimal',
+        'parisian-cafe',
+    ];
+
+    public const VALID_SIGNATURE_STYLES = ['handwritten', 'typed', 'initials'];
+
+    public const VALID_ANIMATION_SPEEDS = ['slow', 'normal', 'fast'];
 }

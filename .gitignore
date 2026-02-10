@@ -26,10 +26,10 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-.claude
+.claude/
 CLAUDE.md
-docs
+docs/
 boost.json
-refrenences
-.playwright-mcp
+refrenences/
+.playwright-mcp/
 nul
