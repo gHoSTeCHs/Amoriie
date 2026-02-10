@@ -1,7 +1,8 @@
-import { memo, useState, useCallback, useEffect, useMemo } from 'react';
+import { memo, useState, useCallback, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { useAudioPlayer } from '@/hooks/use-audio-player';
+import { useReducedMotion } from '@/hooks/use-reduced-motion';
 import { useValentineProgress } from '@/hooks/use-valentine-progress';
 import { useViewerTheme } from '../hooks/use-viewer-theme';
 import { useViewerSoundManager } from '../hooks/use-viewer-sound-manager';
@@ -33,24 +34,6 @@ function isValidCustomizations(data: unknown): data is LoveLetterCustomizations 
         typeof c.letter_text === 'string' &&
         typeof c.theme_id === 'string'
     );
-}
-
-function useReducedMotion(): boolean {
-    const [reducedMotion, setReducedMotion] = useState(false);
-
-    useEffect(() => {
-        const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-        setReducedMotion(mediaQuery.matches);
-
-        const handler = (event: MediaQueryListEvent) => {
-            setReducedMotion(event.matches);
-        };
-
-        mediaQuery.addEventListener('change', handler);
-        return () => mediaQuery.removeEventListener('change', handler);
-    }, []);
-
-    return reducedMotion;
 }
 
 const stageTransition = {

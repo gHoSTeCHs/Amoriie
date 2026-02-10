@@ -42,20 +42,27 @@ function createHowl(src: string | undefined, loop: boolean = false): Howl | null
 
 export function useViewerSoundManager(options: UseViewerSoundManagerOptions): UseViewerSoundManagerReturn {
     const { theme, enabled: initialEnabled } = options;
+
     const [isEnabled, setIsEnabled] = useState(initialEnabled);
     const [isLoading, setIsLoading] = useState(false);
     const [isAmbientPlaying, setIsAmbientPlaying] = useState(false);
 
     const soundsRef = useRef<SoundCache>({});
     const currentThemeIdRef = useRef<string | null>(null);
+    const loadingCountRef = useRef({ total: 0, loaded: 0 });
 
-    const preloadSounds = useCallback((themeConfig: LetterTheme) => {
+    useEffect(() => {
+        if (currentThemeIdRef.current === theme.id) {
+            return;
+        }
+
+        currentThemeIdRef.current = theme.id;
+
         Object.values(soundsRef.current).forEach((howl) => howl?.unload());
         soundsRef.current = {};
 
-        setIsLoading(true);
         const soundKeys: SoundKey[] = ['envelope_open', 'seal_break', 'text_reveal', 'ambient'];
-        const soundsToLoad = soundKeys.filter((key) => themeConfig.sounds[key]);
+        const soundsToLoad = soundKeys.filter((key) => theme.sounds[key]);
         const totalSounds = soundsToLoad.length;
 
         if (totalSounds === 0) {
@@ -63,46 +70,39 @@ export function useViewerSoundManager(options: UseViewerSoundManagerOptions): Us
             return;
         }
 
-        let loadedCount = 0;
+        loadingCountRef.current = { total: totalSounds, loaded: 0 };
+        setIsLoading(true);
 
         soundsToLoad.forEach((key) => {
-            const src = themeConfig.sounds[key];
-            if (!src) return;
+            const src = theme.sounds[key];
+            if (!src) {
+                loadingCountRef.current.loaded++;
+                return;
+            }
 
             const isAmbient = key === 'ambient';
             const howl = createHowl(src, isAmbient);
 
             if (howl) {
-                howl.on('load', () => {
-                    loadedCount++;
-                    if (loadedCount >= totalSounds) {
+                const handleLoadComplete = () => {
+                    loadingCountRef.current.loaded++;
+                    if (loadingCountRef.current.loaded >= loadingCountRef.current.total) {
                         setIsLoading(false);
                     }
-                });
+                };
 
-                howl.on('loaderror', () => {
-                    loadedCount++;
-                    if (loadedCount >= totalSounds) {
-                        setIsLoading(false);
-                    }
-                });
+                howl.on('load', handleLoadComplete);
+                howl.on('loaderror', handleLoadComplete);
 
                 soundsRef.current[key] = howl;
             } else {
-                loadedCount++;
-                if (loadedCount >= totalSounds) {
+                loadingCountRef.current.loaded++;
+                if (loadingCountRef.current.loaded >= loadingCountRef.current.total) {
                     setIsLoading(false);
                 }
             }
         });
-    }, []);
-
-    useEffect(() => {
-        if (currentThemeIdRef.current !== theme.id) {
-            currentThemeIdRef.current = theme.id;
-            preloadSounds(theme);
-        }
-    }, [theme, preloadSounds]);
+    }, [theme.id, theme.sounds]);
 
     useEffect(() => {
         return () => {
