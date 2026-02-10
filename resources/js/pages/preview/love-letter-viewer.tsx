@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LoveLetterViewer from '@/templates/love-letter/viewer/LoveLetterViewer';
 import type { LoveLetterCustomizations, AnimationSpeed, LoveLetterThemeId } from '@/templates/love-letter/schema';
 import { getAllThemes, getTheme } from '@/templates/love-letter/themes';
+import { SoundPreloadHead } from '@/templates/love-letter/components/SoundPreloadHead';
 
 const sampleLetter = `From the moment I first saw you, I knew there was something special about the way you smiled. It wasn't just a smile—it was warmth, kindness, and a little mischief all wrapped into one.
 
@@ -228,6 +229,7 @@ export default function LoveLetterViewerPreview() {
     return (
         <>
             <Head title="Love Letter Viewer Test" />
+            <SoundPreloadHead themeId={selectedTheme} enabled={soundsEnabled} />
 
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500&display=swap');

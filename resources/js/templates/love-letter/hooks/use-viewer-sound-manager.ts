@@ -3,7 +3,11 @@ import { Howl } from 'howler';
 
 import type { LetterTheme } from '../themes';
 
-export type SoundKey = 'envelope_open' | 'seal_break' | 'text_reveal' | 'ambient';
+export type SoundKey =
+    | 'envelope_open'
+    | 'seal_break'
+    | 'text_reveal'
+    | 'ambient';
 
 type SoundCache = Partial<Record<SoundKey, Howl>>;
 
@@ -24,7 +28,10 @@ export type UseViewerSoundManagerReturn = {
     stopAmbient: () => void;
 };
 
-function createHowl(src: string | undefined, loop: boolean = false): Howl | null {
+function createHowl(
+    src: string | undefined,
+    loop: boolean = false,
+): Howl | null {
     if (!src) return null;
 
     try {
@@ -33,14 +40,16 @@ function createHowl(src: string | undefined, loop: boolean = false): Howl | null
             preload: true,
             volume: loop ? 0.3 : 0.5,
             loop,
-            html5: loop,
+            html5: true,
         });
     } catch {
         return null;
     }
 }
 
-export function useViewerSoundManager(options: UseViewerSoundManagerOptions): UseViewerSoundManagerReturn {
+export function useViewerSoundManager(
+    options: UseViewerSoundManagerOptions,
+): UseViewerSoundManagerReturn {
     const { theme, enabled: initialEnabled } = options;
 
     const [isEnabled, setIsEnabled] = useState(initialEnabled);
@@ -61,7 +70,7 @@ export function useViewerSoundManager(options: UseViewerSoundManagerOptions): Us
         Object.values(soundsRef.current).forEach((howl) => howl?.unload());
         soundsRef.current = {};
 
-        const soundKeys: SoundKey[] = ['envelope_open', 'seal_break', 'text_reveal', 'ambient'];
+        const soundKeys: SoundKey[] = ['seal_break'];
         const soundsToLoad = soundKeys.filter((key) => theme.sounds[key]);
         const totalSounds = soundsToLoad.length;
 
@@ -86,7 +95,10 @@ export function useViewerSoundManager(options: UseViewerSoundManagerOptions): Us
             if (howl) {
                 const handleLoadComplete = () => {
                     loadingCountRef.current.loaded++;
-                    if (loadingCountRef.current.loaded >= loadingCountRef.current.total) {
+                    if (
+                        loadingCountRef.current.loaded >=
+                        loadingCountRef.current.total
+                    ) {
                         setIsLoading(false);
                     }
                 };
@@ -97,7 +109,10 @@ export function useViewerSoundManager(options: UseViewerSoundManagerOptions): Us
                 soundsRef.current[key] = howl;
             } else {
                 loadingCountRef.current.loaded++;
-                if (loadingCountRef.current.loaded >= loadingCountRef.current.total) {
+                if (
+                    loadingCountRef.current.loaded >=
+                    loadingCountRef.current.total
+                ) {
                     setIsLoading(false);
                 }
             }
@@ -108,6 +123,7 @@ export function useViewerSoundManager(options: UseViewerSoundManagerOptions): Us
         return () => {
             Object.values(soundsRef.current).forEach((howl) => howl?.unload());
             soundsRef.current = {};
+            currentThemeIdRef.current = null;
         };
     }, []);
 
@@ -120,7 +136,7 @@ export function useViewerSoundManager(options: UseViewerSoundManagerOptions): Us
                 howl.play();
             }
         },
-        [isEnabled]
+        [isEnabled],
     );
 
     const stopSound = useCallback((key: SoundKey) => {
@@ -162,7 +178,7 @@ export function useViewerSoundManager(options: UseViewerSoundManagerOptions): Us
                 stopAllSounds();
             }
         },
-        [stopAllSounds]
+        [stopAllSounds],
     );
 
     return useMemo(
@@ -187,6 +203,6 @@ export function useViewerSoundManager(options: UseViewerSoundManagerOptions): Us
             stopAllSounds,
             startAmbient,
             stopAmbient,
-        ]
+        ],
     );
 }

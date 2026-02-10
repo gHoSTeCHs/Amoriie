@@ -25,6 +25,8 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
     const { src, loop = true, volume = 0.7, autoPlay = false } = options;
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const isCleanedUpRef = useRef(false);
+
     const [isPlaying, setIsPlaying] = useState(false);
     const [isReady, setIsReady] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
@@ -33,42 +35,59 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
+        isCleanedUpRef.current = false;
+
         if (!src) {
+            setIsReady(false);
+            setIsPlaying(false);
+            setDuration(0);
+            setCurrentTime(0);
+            setError(null);
             return;
         }
 
         const audio = new Audio(src);
         audio.loop = loop;
         audio.volume = volume;
+        audio.preload = 'auto';
         audioRef.current = audio;
 
         const handleCanPlay = () => {
+            if (isCleanedUpRef.current) return;
             setIsReady(true);
             setDuration(audio.duration);
             if (autoPlay) {
-                audio.play().catch(() => {
-                    /** Browser blocked autoplay - user must interact first */
-                });
+                audio.play().catch(() => {});
             }
         };
 
         const handleTimeUpdate = () => {
+            if (isCleanedUpRef.current) return;
             setCurrentTime(audio.currentTime);
         };
 
         const handleEnded = () => {
+            if (isCleanedUpRef.current) return;
             if (!loop) {
                 setIsPlaying(false);
             }
         };
 
         const handleError = () => {
+            if (isCleanedUpRef.current) return;
             setError(new Error('Failed to load audio'));
             setIsReady(false);
         };
 
-        const handlePlay = () => setIsPlaying(true);
-        const handlePause = () => setIsPlaying(false);
+        const handlePlay = () => {
+            if (isCleanedUpRef.current) return;
+            setIsPlaying(true);
+        };
+
+        const handlePause = () => {
+            if (isCleanedUpRef.current) return;
+            setIsPlaying(false);
+        };
 
         audio.addEventListener('canplay', handleCanPlay);
         audio.addEventListener('timeupdate', handleTimeUpdate);
@@ -78,7 +97,9 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
         audio.addEventListener('pause', handlePause);
 
         return () => {
+            isCleanedUpRef.current = true;
             audio.pause();
+            audio.src = '';
             audio.removeEventListener('canplay', handleCanPlay);
             audio.removeEventListener('timeupdate', handleTimeUpdate);
             audio.removeEventListener('ended', handleEnded);
@@ -90,17 +111,22 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
     }, [src, loop, volume, autoPlay]);
 
     const play = useCallback(async () => {
-        if (!audioRef.current || !isReady) return;
+        const audio = audioRef.current;
+        if (!audio || !isReady || isCleanedUpRef.current) return;
+
         try {
-            await audioRef.current.play();
+            await audio.play();
         } catch {
-            setError(new Error('Playback failed - user interaction required'));
+            if (!isCleanedUpRef.current) {
+                setError(new Error('Playback failed - user interaction required'));
+            }
         }
     }, [isReady]);
 
     const pause = useCallback(() => {
-        if (!audioRef.current) return;
-        audioRef.current.pause();
+        const audio = audioRef.current;
+        if (!audio || isCleanedUpRef.current) return;
+        audio.pause();
     }, []);
 
     const toggle = useCallback(async () => {
@@ -112,16 +138,22 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
     }, [isPlaying, play, pause]);
 
     const toggleMute = useCallback(() => {
-        if (!audioRef.current) return;
+        const audio = audioRef.current;
+        if (!audio || isCleanedUpRef.current) return;
+
         const newMuted = !isMuted;
-        audioRef.current.muted = newMuted;
+        audio.muted = newMuted;
         setIsMuted(newMuted);
     }, [isMuted]);
 
-    const seek = useCallback((time: number) => {
-        if (!audioRef.current) return;
-        audioRef.current.currentTime = Math.max(0, Math.min(time, duration));
-    }, [duration]);
+    const seek = useCallback(
+        (time: number) => {
+            const audio = audioRef.current;
+            if (!audio || isCleanedUpRef.current) return;
+            audio.currentTime = Math.max(0, Math.min(time, duration));
+        },
+        [duration]
+    );
 
     return {
         isPlaying,

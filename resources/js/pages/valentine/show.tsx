@@ -5,6 +5,8 @@ import { HeartCrack, Home, Sparkles } from 'lucide-react';
 import { ExpiredScreen } from '@/components/valentine/ExpiredScreen';
 import { OgMeta } from '@/components/shared/OgMeta';
 import { useTemplateModule } from '@/templates/registry';
+import { SoundPreloadHead } from '@/templates/love-letter/components/SoundPreloadHead';
+import type { LoveLetterCustomizations } from '@/templates/love-letter/schema';
 import type { AnyTemplateCustomizations, TemplateId } from '@/types/customizations';
 
 type ValentineData = {
@@ -251,8 +253,21 @@ function NotFoundScreen() {
 function DynamicTemplateViewer({ valentine }: { valentine: ValentineData }) {
     const { module, isLoading, error } = useTemplateModule(valentine.template_id);
 
+    const soundPreloadElement =
+        valentine.template_id === 'love-letter' ? (
+            <SoundPreloadHead
+                themeId={(valentine.customizations as LoveLetterCustomizations).theme_id}
+                enabled={(valentine.customizations as LoveLetterCustomizations).customization?.sounds_enabled ?? true}
+            />
+        ) : null;
+
     if (isLoading) {
-        return <LoadingSpinner />;
+        return (
+            <>
+                {soundPreloadElement}
+                <LoadingSpinner />
+            </>
+        );
     }
 
     if (error || !module) {
@@ -262,11 +277,14 @@ function DynamicTemplateViewer({ valentine }: { valentine: ValentineData }) {
     const ViewerComponent = module.Viewer;
 
     return (
-        <ViewerComponent
-            template={{} as never}
-            customizations={valentine.customizations}
-            slug={valentine.slug}
-        />
+        <>
+            {soundPreloadElement}
+            <ViewerComponent
+                template={{} as never}
+                customizations={valentine.customizations}
+                slug={valentine.slug}
+            />
+        </>
     );
 }
 
