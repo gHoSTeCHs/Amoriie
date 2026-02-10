@@ -1,16 +1,8 @@
 [build]
-builder = "nixpacks"
-buildCommand = "npm run build"
+builder = "railpack"
 
 [deploy]
-startCommand = "php artisan config:cache && php artisan route:cache && php artisan view:cache && /start-container.sh"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
-
-[[deploy.preDeployCommand]]
-command = "php artisan migrate --force"
-
-[[deploy.preDeployCommand]]
-command = "php artisan db:seed --force"
