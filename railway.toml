@@ -8,4 +8,9 @@ healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
-releaseCommand = "php artisan migrate --force && php artisan db:seed --force"
+
+[[deploy.preDeployCommand]]
+command = "php artisan migrate --force"
+
+[[deploy.preDeployCommand]]
+command = "php artisan db:seed --force"
