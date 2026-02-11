@@ -16,7 +16,7 @@ class TemplateSeeder extends Seeder
                 'name' => 'Polaroid Memories',
                 'category' => TemplateCategory::Storybook->value,
                 'description' => 'A nostalgic journey through your favorite moments together, presented as scattered polaroid photos with handwritten captions.',
-                'thumbnail_url' => null,
+                'thumbnail_url' => '/images/templates/polaroid-memories.png',
                 'preview_url' => null,
                 'schema' => json_encode([
                     'pages' => [
@@ -105,7 +105,7 @@ class TemplateSeeder extends Seeder
                 'name' => 'Love Letter',
                 'category' => TemplateCategory::Interactive->value,
                 'description' => 'A heartfelt letter sealed with love, revealed with elegant animations across 6 stunning themes.',
-                'thumbnail_url' => null,
+                'thumbnail_url' => '/images/templates/love-letter.png',
                 'preview_url' => null,
                 'schema' => json_encode([
                     'themes' => [
