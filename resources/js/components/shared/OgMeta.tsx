@@ -19,8 +19,7 @@ export function OgMeta({
     twitterCard = 'summary_large_image',
     siteName = 'Amoriie',
 }: OgMetaProps) {
-    const defaultImage = '/images/og-default.png';
-    const ogImage = image || defaultImage;
+    const ogImage = image || '/images/og-default.png';
 
     return (
         <Head>

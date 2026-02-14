@@ -135,7 +135,7 @@ class ValentineController extends Controller
         if ($valentine) {
             $ogImageUrl = $valentine->og_image_path
                 ? $this->r2Storage->getPublicUrl($valentine->og_image_path)
-                : null;
+                : asset('images/og-default.png');
 
             return Inertia::render('valentine/show', [
                 'valentine' => [
