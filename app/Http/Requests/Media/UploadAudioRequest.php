@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Media;
 
+use App\Rules\ValidFileContent;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -18,7 +19,7 @@ class UploadAudioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'audio' => ['required', 'file', 'mimes:mp3,wav,ogg,m4a,mp4', 'max:15360'],
+            'audio' => ['required', 'file', 'mimes:mp3,wav,ogg,m4a,mp4', 'max:15360', new ValidFileContent('audio')],
             'metadata' => ['nullable', 'array'],
             'metadata.duration' => ['nullable', 'numeric', 'min:0', 'max:300'],
             'metadata.sample_rate' => ['nullable', 'integer', 'min:8000', 'max:96000'],

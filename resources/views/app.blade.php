@@ -31,7 +31,28 @@
         }
     </style>
 
-    <title inertia>{{ config('app.name', 'Laravel') }}</title>
+    @php
+        $ogTitle = $page['props']['og_title'] ?? 'Amoriie — Create Beautiful Love Letters & Valentines';
+        $ogDescription = $page['props']['og_description'] ?? 'Create beautiful, personalized love letters and valentines for your special someone. Choose from stunning themes, add music, and share your feelings.';
+        $ogImage = $page['props']['og_image_url'] ?? asset('ogimage.jpg');
+        $ogUrl = $page['props']['og_url'] ?? url()->current();
+    @endphp
+
+    <title inertia>{{ $ogTitle }}</title>
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDescription }}">
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="{{ $ogUrl }}">
+    <meta property="og:site_name" content="Amoriie">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $ogTitle }}">
+    <meta name="twitter:description" content="{{ $ogDescription }}">
+    <meta name="twitter:image" content="{{ $ogImage }}">
+    <meta property="og:logo" content="{{ asset('apple-touch-icon.png') }}">
 
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">

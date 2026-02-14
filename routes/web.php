@@ -11,6 +11,12 @@ use Laravel\Fortify\Features;
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
+        'ogImageUrl' => asset('ogimage.jpg'),
+        'appUrl' => config('app.url'),
+        'og_title' => 'Amoriie — Create Beautiful Love Letters & Valentines',
+        'og_description' => 'Create beautiful, personalized love letters and valentines for your special someone. Choose from stunning themes, add music, and share your feelings.',
+        'og_image_url' => asset('ogimage.jpg'),
+        'og_url' => config('app.url'),
     ]);
 })->name('home');
 
@@ -45,6 +51,9 @@ Route::prefix('api')->group(function (): void {
         ->name('api.audio-library.index');
 });
 
+Route::get('privacy', fn () => Inertia::render('privacy'))->name('privacy');
+Route::get('terms', fn () => Inertia::render('terms'))->name('terms');
+
 Route::get('for/{slug}', [ValentineController::class, 'show'])->name('valentine.show');
 
 Route::get('stats/{secret}', [StatsController::class, 'show'])
@@ -57,6 +66,8 @@ if (app()->isLocal()) {
         Route::get('/audio-trimmer', fn () => Inertia::render('preview/audio-trimmer'))->name('audio-trimmer');
         Route::get('/love-letter', fn () => Inertia::render('preview/love-letter-viewer'))->name('love-letter');
     });
+
+    Route::get('/envelope', fn () => Inertia::render('envelope'))->name('envelope');
 }
 
 require __DIR__.'/settings.php';

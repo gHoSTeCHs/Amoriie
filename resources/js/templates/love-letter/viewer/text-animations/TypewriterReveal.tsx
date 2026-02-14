@@ -1,13 +1,17 @@
-import { memo, useRef, useLayoutEffect, useMemo, useState } from 'react';
+import { memo, useRef, useLayoutEffect, useMemo, useState, type RefObject } from 'react';
 import gsap from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { motion } from 'framer-motion';
 
 import { parseText, splitTextForAnimation } from '../lib/text-animation-utils';
+
+gsap.registerPlugin(ScrollToPlugin);
 
 type TypewriterRevealProps = {
     text: string;
     font: string;
     color: string;
+    scrollContainerRef?: RefObject<HTMLDivElement | null>;
     onStart?: () => void;
     onComplete: () => void;
     speedMultiplier: number;
@@ -18,6 +22,7 @@ function TypewriterReveal({
     text,
     font,
     color,
+    scrollContainerRef,
     onStart,
     onComplete,
     speedMultiplier,
@@ -85,6 +90,23 @@ function TypewriterReveal({
                             if (!hasStartedRef.current) {
                                 hasStartedRef.current = true;
                                 onStart?.();
+                            }
+                            if (cursor) {
+                                char.after(cursor);
+                            }
+                            const container = scrollContainerRef?.current;
+                            if (container) {
+                                const charEl = char as HTMLElement;
+                                const charBottom = charEl.offsetTop + charEl.offsetHeight;
+                                const visibleBottom = container.scrollTop + container.clientHeight;
+                                if (charBottom > visibleBottom - 40) {
+                                    gsap.to(container, {
+                                        scrollTo: { y: charBottom - container.clientHeight + 80 },
+                                        duration: 0.3,
+                                        ease: 'power2.out',
+                                        overwrite: true,
+                                    });
+                                }
                             }
                         },
                     },

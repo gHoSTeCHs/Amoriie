@@ -87,6 +87,7 @@ export default function TemplateSelection({ templates }: Props) {
     return (
         <>
             <Head title="Choose Your Template — Amoriie">
+                <meta name="description" content="Pick from beautifully crafted love letter templates to express your feelings. Each theme sets the perfect mood for your message." />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link
                     rel="preconnect"

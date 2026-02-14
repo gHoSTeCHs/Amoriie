@@ -56,4 +56,6 @@ final class CustomizationConstraints
     public const VALID_SIGNATURE_STYLES = ['handwritten', 'typed', 'initials'];
 
     public const VALID_ANIMATION_SPEEDS = ['slow', 'normal', 'fast'];
+
+    public const VALID_NO_BUTTON_BEHAVIORS = ['dodge', 'shrink-grow', 'plead', 'simple'];
 }

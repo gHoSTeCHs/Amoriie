@@ -3,7 +3,5 @@ builder = "railpack"
 buildCommand = "npm run build"
 
 [deploy]
-healthcheckPath = "/"
-healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3

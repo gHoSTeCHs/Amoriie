@@ -38,7 +38,7 @@ function createHowl(
         return new Howl({
             src: [src],
             preload: true,
-            volume: loop ? 0.3 : 0.5,
+            volume: loop ? 0.3 : 0.1,
             loop,
             html5: true,
         });

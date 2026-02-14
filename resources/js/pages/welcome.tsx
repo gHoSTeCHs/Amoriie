@@ -1,7 +1,15 @@
 import { Head, Link } from '@inertiajs/react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Heart, Sparkles, ArrowRight, Palette, ImagePlus, Send } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
+import {
+    ArrowRight,
+    Heart,
+    ImagePlus,
+    Palette,
+    Send,
+    Sparkles,
+} from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import create from '@/routes/create';
 
 interface FloatingHeart {
     id: number;
@@ -16,14 +24,17 @@ function FloatingHearts() {
     const [hearts, setHearts] = useState<FloatingHeart[]>([]);
 
     useEffect(() => {
-        const generated: FloatingHeart[] = Array.from({ length: 20 }, (_, i) => ({
-            id: i,
-            x: Math.random() * 100,
-            delay: Math.random() * 5,
-            duration: 8 + Math.random() * 12,
-            size: 8 + Math.random() * 16,
-            opacity: 0.1 + Math.random() * 0.3,
-        }));
+        const generated: FloatingHeart[] = Array.from(
+            { length: 20 },
+            (_, i) => ({
+                id: i,
+                x: Math.random() * 100,
+                delay: Math.random() * 5,
+                duration: 8 + Math.random() * 12,
+                size: 8 + Math.random() * 16,
+                opacity: 0.1 + Math.random() * 0.3,
+            }),
+        );
         setHearts(generated);
     }, []);
 
@@ -90,12 +101,14 @@ function FeatureCard({
             className="group relative"
         >
             <div className="absolute -inset-px rounded-3xl bg-gradient-to-b from-rose-500/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-            <div className="relative rounded-3xl border border-white/5 bg-white/[0.02] p-8 backdrop-blur-sm transition-all duration-500 group-hover:border-rose-500/20 group-hover:bg-white/[0.04]">
+            <div className="relative rounded-3xl border border-white/5 bg-white/[0.02] p-5 backdrop-blur-sm transition-all duration-500 group-hover:border-rose-500/20 group-hover:bg-white/[0.04] sm:p-8">
                 <div className="mb-4 inline-flex rounded-2xl bg-gradient-to-br from-rose-500/20 to-pink-500/10 p-3">
                     {icon}
                 </div>
                 <h3 className="mb-2 font-serif text-xl text-white">{title}</h3>
-                <p className="leading-relaxed text-rose-100/60">{description}</p>
+                <p className="leading-relaxed text-rose-100/60">
+                    {description}
+                </p>
             </div>
         </motion.div>
     );
@@ -106,7 +119,7 @@ function PolaroidPreview() {
         <div className="relative h-56 w-full">
             {/* Scattered polaroid stack with depth */}
             <motion.div
-                className="absolute left-1/2 top-1/2 h-28 w-24 -translate-x-1/2 -translate-y-1/2"
+                className="absolute top-1/2 left-1/2 h-28 w-24 -translate-x-1/2 -translate-y-1/2"
                 style={{ transformStyle: 'preserve-3d' }}
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: 'spring', stiffness: 300 }}
@@ -119,7 +132,11 @@ function PolaroidPreview() {
                         transformOrigin: 'center center',
                     }}
                     animate={{ rotate: [-12, -10, -12] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                    }}
                 >
                     <div className="h-16 w-full rounded-sm bg-gradient-to-br from-rose-300/40 to-pink-200/40" />
                     <div className="mt-1.5 h-2 w-12 rounded-full bg-rose-200/60" />
@@ -134,7 +151,12 @@ function PolaroidPreview() {
                         transformOrigin: 'center center',
                     }}
                     animate={{ rotate: [6, 8, 6] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+                    transition={{
+                        duration: 5,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                        delay: 0.5,
+                    }}
                 >
                     <div className="h-16 w-full rounded-sm bg-gradient-to-br from-pink-200/50 to-rose-300/40" />
                     <div className="mt-1.5 h-2 w-10 rounded-full bg-rose-200/60" />
@@ -149,11 +171,16 @@ function PolaroidPreview() {
                         transformOrigin: 'center center',
                     }}
                     animate={{ rotate: [-3, -1, -3] }}
-                    transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
+                    transition={{
+                        duration: 3.5,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                        delay: 0.2,
+                    }}
                 >
                     <div className="relative h-16 w-full overflow-hidden rounded-sm bg-gradient-to-br from-rose-400 to-pink-500">
                         <Heart
-                            className="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 text-white/80"
+                            className="absolute top-1/2 left-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 text-white/80"
                             fill="currentColor"
                         />
                     </div>
@@ -163,7 +190,7 @@ function PolaroidPreview() {
 
             {/* Decorative tape */}
             <div
-                className="absolute left-1/2 top-6 h-4 w-10 -translate-x-1/2 -rotate-12 rounded-sm bg-rose-200/30"
+                className="absolute top-6 left-1/2 h-4 w-10 -translate-x-1/2 -rotate-12 rounded-sm bg-rose-200/30"
                 style={{ backdropFilter: 'blur(2px)' }}
             />
         </div>
@@ -174,7 +201,7 @@ function EnvelopePreview() {
     return (
         <div className="relative h-56 w-full">
             <motion.div
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                 whileHover={{ scale: 1.05, y: -5 }}
                 transition={{ type: 'spring', stiffness: 300 }}
             >
@@ -204,10 +231,14 @@ function EnvelopePreview() {
                                 '0 4px 15px rgba(190, 18, 60, 0.4)',
                             ],
                         }}
-                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                        transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                        }}
                     >
                         <Heart
-                            className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 text-rose-200"
+                            className="absolute top-1/2 left-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 text-rose-200"
                             fill="currentColor"
                         />
                     </motion.div>
@@ -215,20 +246,30 @@ function EnvelopePreview() {
 
                 {/* Top flap */}
                 <motion.div
-                    className="absolute -top-6 left-1/2 h-12 w-28 -translate-x-1/2 origin-bottom"
+                    className="absolute -top-6 left-1/2 h-12 w-28 origin-bottom -translate-x-1/2"
                     style={{
                         clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)',
-                        background: 'linear-gradient(to bottom right, #fce7f3, #fff1f2)',
+                        background:
+                            'linear-gradient(to bottom right, #fce7f3, #fff1f2)',
                     }}
                     animate={{ rotateX: [0, 5, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                    }}
                 />
 
                 {/* Letter peeking out */}
                 <motion.div
                     className="absolute -top-2 left-1/2 h-6 w-24 -translate-x-1/2 rounded-t bg-white shadow-sm"
                     animate={{ y: [0, -2, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                    transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                        delay: 1,
+                    }}
                 >
                     <div className="mx-2 mt-2 space-y-1">
                         <div className="h-0.5 w-16 rounded-full bg-rose-200/60" />
@@ -246,7 +287,7 @@ function TemplateShowcase() {
             id: 'polaroid-memories',
             title: 'Polaroid Memories',
             description: 'Nostalgic & playful',
-            preview: <PolaroidPreview />,
+            thumbnail: '/images/templates/polaroid-memories.png',
             features: [
                 '4 beautiful backgrounds',
                 '3 unique frame styles',
@@ -260,7 +301,7 @@ function TemplateShowcase() {
             id: 'love-letter',
             title: 'Love Letter',
             description: 'Classic & romantic',
-            preview: <EnvelopePreview />,
+            thumbnail: '/images/templates/love-letter.png',
             features: [
                 '6 themed experiences',
                 'Envelope animations',
@@ -276,8 +317,8 @@ function TemplateShowcase() {
         <section className="relative px-6 py-24 lg:px-8">
             {/* Decorative background glow */}
             <div className="pointer-events-none absolute inset-0">
-                <div className="absolute left-1/4 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-500/5 blur-3xl" />
-                <div className="absolute right-1/4 top-1/2 h-96 w-96 -translate-y-1/2 translate-x-1/2 rounded-full bg-pink-500/5 blur-3xl" />
+                <div className="absolute top-1/2 left-1/4 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-500/5 blur-3xl" />
+                <div className="absolute top-1/2 right-1/4 h-96 w-96 translate-x-1/2 -translate-y-1/2 rounded-full bg-pink-500/5 blur-3xl" />
             </div>
 
             <div className="relative mx-auto max-w-6xl">
@@ -294,7 +335,7 @@ function TemplateShowcase() {
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.2 }}
-                        className="mb-4 inline-block text-sm uppercase tracking-[0.2em] text-rose-400/80"
+                        className="mb-4 inline-block text-sm tracking-[0.2em] text-rose-400/80 uppercase"
                     >
                         Express Your Love
                     </motion.span>
@@ -331,17 +372,26 @@ function TemplateShowcase() {
                             {/* Card */}
                             <div className="relative overflow-hidden rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-sm transition-all duration-500 group-hover:border-rose-500/20 group-hover:bg-white/[0.04]">
                                 {/* Preview area */}
-                                <div className="relative overflow-hidden border-b border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent p-8">
-                                    {template.preview}
+                                <div className="relative overflow-hidden border-b border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent">
+                                    <motion.img
+                                        src={template.thumbnail}
+                                        alt={template.title}
+                                        className="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        initial={{ opacity: 0 }}
+                                        whileInView={{ opacity: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.5 }}
+                                    />
                                 </div>
 
                                 {/* Content */}
-                                <div className="p-8">
+                                <div className="p-5 sm:p-8">
                                     <div className="mb-4">
                                         <h3
                                             className="mb-1 text-2xl text-white"
                                             style={{
-                                                fontFamily: "'Cormorant Garamond', serif",
+                                                fontFamily:
+                                                    "'Cormorant Garamond', serif",
                                                 fontWeight: 500,
                                             }}
                                         >
@@ -349,7 +399,10 @@ function TemplateShowcase() {
                                         </h3>
                                         <p
                                             className="text-rose-300/70"
-                                            style={{ fontFamily: "'Dancing Script', cursive" }}
+                                            style={{
+                                                fontFamily:
+                                                    "'Dancing Script', cursive",
+                                            }}
                                         >
                                             {template.description}
                                         </p>
@@ -359,15 +412,23 @@ function TemplateShowcase() {
                                     <ul className="mb-6 space-y-2.5">
                                         {template.features.map((feature, i) => (
                                             <motion.li
-                                                key={i}
+                                                key={`${template.id}-feature-${i}`}
                                                 initial={{ opacity: 0, x: -10 }}
-                                                whileInView={{ opacity: 1, x: 0 }}
+                                                whileInView={{
+                                                    opacity: 1,
+                                                    x: 0,
+                                                }}
                                                 viewport={{ once: true }}
-                                                transition={{ delay: 0.3 + i * 0.1 }}
+                                                transition={{
+                                                    delay: 0.3 + i * 0.1,
+                                                }}
                                                 className="flex items-center gap-3 text-sm text-rose-100/70"
                                             >
                                                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-rose-500/20 to-pink-500/10">
-                                                    <Heart className="h-2.5 w-2.5 text-rose-400" fill="currentColor" />
+                                                    <Heart
+                                                        className="h-2.5 w-2.5 text-rose-400"
+                                                        fill="currentColor"
+                                                    />
                                                 </span>
                                                 {feature}
                                             </motion.li>
@@ -376,7 +437,7 @@ function TemplateShowcase() {
 
                                     {/* CTA */}
                                     <Link
-                                        href={`/create?template=${template.id}`}
+                                        href={create.builder.url(template.id)}
                                         className="group/btn relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl border border-rose-500/30 bg-rose-500/10 px-6 py-3.5 text-sm font-medium text-rose-100 transition-all duration-300 hover:border-rose-500/50 hover:bg-rose-500/20"
                                     >
                                         <span>Choose This</span>
@@ -389,11 +450,15 @@ function TemplateShowcase() {
                 </div>
 
                 {/* Decorative connector */}
-                <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <motion.div
                         className="hidden h-32 w-px bg-gradient-to-b from-transparent via-rose-500/20 to-transparent md:block"
                         animate={{ opacity: [0.3, 0.6, 0.3] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                        transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                        }}
                     />
                 </div>
             </div>
@@ -407,19 +472,22 @@ function HowItWorks() {
             number: '01',
             icon: Palette,
             title: 'Choose & Customize',
-            description: 'Pick your template and personalize the theme to match your style',
+            description:
+                'Pick your template and personalize the theme to match your style',
         },
         {
             number: '02',
             icon: ImagePlus,
             title: 'Add Your Content',
-            description: 'Upload photos, write your heartfelt message, and add your song',
+            description:
+                'Upload photos, write your heartfelt message, and add your song',
         },
         {
             number: '03',
             icon: Send,
             title: 'Share & Delight',
-            description: 'Send your unique link and watch their reaction unfold',
+            description:
+                'Send your unique link and watch their reaction unfold',
         },
     ];
 
@@ -427,7 +495,7 @@ function HowItWorks() {
         <section className="relative overflow-hidden px-6 py-24 lg:px-8">
             {/* Background decoration */}
             <div className="pointer-events-none absolute inset-0">
-                <div className="absolute left-1/2 top-0 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-rose-500/20 to-transparent" />
+                <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-rose-500/20 to-transparent" />
                 <div className="absolute bottom-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-rose-500/20 to-transparent" />
             </div>
 
@@ -445,7 +513,7 @@ function HowItWorks() {
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.2 }}
-                        className="mb-4 inline-block text-sm uppercase tracking-[0.2em] text-rose-400/80"
+                        className="mb-4 inline-block text-sm tracking-[0.2em] text-rose-400/80 uppercase"
                     >
                         Simple & Magical
                     </motion.span>
@@ -466,15 +534,15 @@ function HowItWorks() {
                 {/* Steps container */}
                 <div className="relative">
                     {/* Connecting line - desktop only */}
-                    <div className="absolute left-0 right-0 top-16 hidden md:block">
+                    <div className="absolute top-10 right-0 left-0 hidden md:block">
                         <svg
-                            className="mx-auto h-8 w-full max-w-3xl"
-                            viewBox="0 0 800 32"
+                            className="mx-auto h-8 w-full max-w-4xl"
+                            viewBox="0 0 900 32"
                             fill="none"
                             preserveAspectRatio="none"
                         >
                             <motion.path
-                                d="M100 16 C200 16, 200 16, 400 16 C600 16, 600 16, 700 16"
+                                d="M150 16 C240 16, 260 16, 450 16 C640 16, 660 16, 750 16"
                                 stroke="url(#lineGradient)"
                                 strokeWidth="2"
                                 strokeLinecap="round"
@@ -482,13 +550,32 @@ function HowItWorks() {
                                 initial={{ pathLength: 0, opacity: 0 }}
                                 whileInView={{ pathLength: 1, opacity: 1 }}
                                 viewport={{ once: true }}
-                                transition={{ duration: 1.5, delay: 0.5, ease: 'easeInOut' }}
+                                transition={{
+                                    duration: 1.5,
+                                    delay: 0.5,
+                                    ease: 'easeInOut',
+                                }}
                             />
                             <defs>
-                                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stopColor="rgba(244, 63, 94, 0.3)" />
-                                    <stop offset="50%" stopColor="rgba(236, 72, 153, 0.5)" />
-                                    <stop offset="100%" stopColor="rgba(244, 63, 94, 0.3)" />
+                                <linearGradient
+                                    id="lineGradient"
+                                    x1="0%"
+                                    y1="0%"
+                                    x2="100%"
+                                    y2="0%"
+                                >
+                                    <stop
+                                        offset="0%"
+                                        stopColor="rgba(244, 63, 94, 0.3)"
+                                    />
+                                    <stop
+                                        offset="50%"
+                                        stopColor="rgba(236, 72, 153, 0.5)"
+                                    />
+                                    <stop
+                                        offset="100%"
+                                        stopColor="rgba(244, 63, 94, 0.3)"
+                                    />
                                 </linearGradient>
                             </defs>
                         </svg>
@@ -502,20 +589,29 @@ function HowItWorks() {
                                 initial={{ opacity: 0, y: 40 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ duration: 0.6, delay: index * 0.2 }}
+                                transition={{
+                                    duration: 0.6,
+                                    delay: index * 0.2,
+                                }}
                                 className="group relative text-center"
                             >
-                                {/* Step number - decorative */}
+                                {/* Step number - decorative background */}
                                 <motion.div
-                                    className="absolute -top-6 left-1/2 -translate-x-1/2 select-none"
+                                    className="absolute -top-16 left-1/2 -translate-x-1/2 select-none md:-top-20"
                                     initial={{ opacity: 0, scale: 0.5 }}
                                     whileInView={{ opacity: 1, scale: 1 }}
                                     viewport={{ once: true }}
-                                    transition={{ duration: 0.4, delay: index * 0.2 + 0.3 }}
+                                    transition={{
+                                        duration: 0.4,
+                                        delay: index * 0.2 + 0.3,
+                                    }}
                                 >
                                     <span
-                                        className="text-6xl text-rose-500/10 md:text-7xl"
-                                        style={{ fontFamily: "'Dancing Script', cursive" }}
+                                        className="text-7xl text-rose-500/[0.08] md:text-8xl"
+                                        style={{
+                                            fontFamily:
+                                                "'Dancing Script', cursive",
+                                        }}
                                     >
                                         {step.number}
                                     </span>
@@ -525,7 +621,10 @@ function HowItWorks() {
                                 <motion.div
                                     className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center"
                                     whileHover={{ scale: 1.05 }}
-                                    transition={{ type: 'spring', stiffness: 400 }}
+                                    transition={{
+                                        type: 'spring',
+                                        stiffness: 400,
+                                    }}
                                 >
                                     {/* Outer glow ring */}
                                     <div className="absolute inset-0 rounded-full bg-gradient-to-br from-rose-500/20 to-pink-500/10 blur-md transition-all duration-500 group-hover:from-rose-500/30 group-hover:to-pink-500/20" />
@@ -555,7 +654,8 @@ function HowItWorks() {
                                 <h3
                                     className="mb-3 text-xl text-white md:text-2xl"
                                     style={{
-                                        fontFamily: "'Cormorant Garamond', serif",
+                                        fontFamily:
+                                            "'Cormorant Garamond', serif",
                                         fontWeight: 500,
                                     }}
                                 >
@@ -565,9 +665,9 @@ function HowItWorks() {
                                     {step.description}
                                 </p>
 
-                                {/* Mobile connector - shows between items on mobile */}
+                                {/* Mobile connector - smooth flow */}
                                 {index < steps.length - 1 && (
-                                    <div className="mx-auto mt-8 h-12 w-px bg-gradient-to-b from-rose-500/30 to-transparent md:hidden" />
+                                    <div className="mx-auto mt-6 h-16 w-px bg-gradient-to-b from-rose-500/40 via-rose-500/20 to-rose-500/40 md:hidden" />
                                 )}
                             </motion.div>
                         ))}
@@ -640,7 +740,10 @@ function InteractiveHeart() {
                             <stop offset="100%" stopColor="#9f1239" />
                         </linearGradient>
                         <filter id="glow">
-                            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                            <feGaussianBlur
+                                stdDeviation="2"
+                                result="coloredBlur"
+                            />
                             <feMerge>
                                 <feMergeNode in="coloredBlur" />
                                 <feMergeNode in="SourceGraphic" />
@@ -666,10 +769,28 @@ function InteractiveHeart() {
     );
 }
 
-export default function Welcome() {
+export default function Welcome({ ogImageUrl, appUrl }: { ogImageUrl: string; appUrl: string }) {
+    const title = 'Amoriie — Create Beautiful Love Letters & Valentines';
+    const description = 'Create beautiful, personalized love letters and valentines for your special someone. Choose from stunning themes, add music, and share your feelings.';
+
     return (
         <>
-            <Head title="Amoriie — Confess Your Feelings">
+            <Head title={title}>
+                <meta name="description" content={description} />
+
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={appUrl} />
+                <meta property="og:title" content={title} />
+                <meta property="og:description" content={description} />
+                <meta property="og:image" content={ogImageUrl} />
+                <meta property="og:site_name" content="Amoriie" />
+
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:url" content={appUrl} />
+                <meta name="twitter:title" content={title} />
+                <meta name="twitter:description" content={description} />
+                <meta name="twitter:image" content={ogImageUrl} />
+
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link
                     rel="preconnect"
@@ -685,8 +806,8 @@ export default function Welcome() {
             <div className="relative min-h-screen overflow-hidden bg-[#0c0607]">
                 <FloatingHearts />
 
-                <GlowingOrb className="left-1/4 top-1/4 h-96 w-96 -translate-x-1/2 -translate-y-1/2" />
-                <GlowingOrb className="bottom-1/4 right-1/4 h-80 w-80 translate-x-1/2 translate-y-1/2" />
+                <GlowingOrb className="top-1/4 left-1/4 h-96 w-96 -translate-x-1/2 -translate-y-1/2" />
+                <GlowingOrb className="right-1/4 bottom-1/4 h-80 w-80 translate-x-1/2 translate-y-1/2" />
 
                 <div
                     className="pointer-events-none absolute inset-0 opacity-30"
@@ -696,14 +817,17 @@ export default function Welcome() {
                 />
 
                 <header className="relative z-10">
-                    <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
+                    <nav className="mx-auto flex max-w-7xl items-center justify-center px-6 py-6 lg:px-8">
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6 }}
                         >
                             <Link href="/" className="flex items-center gap-2">
-                                <Heart className="h-6 w-6 text-rose-500" fill="currentColor" />
+                                <Heart
+                                    className="h-6 w-6 text-rose-500"
+                                    fill="currentColor"
+                                />
                                 <span
                                     className="text-2xl tracking-wide text-white"
                                     style={{ fontFamily: "'Italiana', serif" }}
@@ -712,31 +836,11 @@ export default function Welcome() {
                                 </span>
                             </Link>
                         </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.6 }}
-                            className="flex items-center gap-4"
-                        >
-                            <Link
-                                href="/login"
-                                className="px-4 py-2 text-sm text-rose-100/80 transition-colors hover:text-white"
-                            >
-                                Sign In
-                            </Link>
-                            <Link
-                                href="/register"
-                                className="rounded-full border border-rose-500/30 bg-rose-500/10 px-5 py-2 text-sm text-rose-100 transition-all hover:border-rose-500/50 hover:bg-rose-500/20"
-                            >
-                                Get Started
-                            </Link>
-                        </motion.div>
                     </nav>
                 </header>
 
                 <main>
-                    <section className="relative px-6 pb-24 pt-12 lg:px-8 lg:pt-20">
+                    <section className="relative px-6 pt-12 pb-24 lg:px-8 lg:pt-20">
                         <div className="mx-auto max-w-7xl">
                             <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-8">
                                 <motion.div
@@ -759,16 +863,18 @@ export default function Welcome() {
                                         <span
                                             className="block text-4xl leading-tight text-white md:text-5xl lg:text-6xl"
                                             style={{
-                                                fontFamily: "'Cormorant Garamond', serif",
+                                                fontFamily:
+                                                    "'Cormorant Garamond', serif",
                                                 fontWeight: 500,
                                             }}
                                         >
                                             Tell them how you
                                         </span>
                                         <span
-                                            className="mt-2 block bg-gradient-to-r from-rose-400 via-pink-400 to-rose-300 bg-clip-text text-5xl text-transparent md:text-6xl lg:text-7xl"
+                                            className="mt-2 block bg-gradient-to-r from-rose-400 via-pink-400 to-rose-300 bg-clip-text text-4xl text-transparent sm:text-5xl md:text-6xl lg:text-7xl"
                                             style={{
-                                                fontFamily: "'Dancing Script', cursive",
+                                                fontFamily:
+                                                    "'Dancing Script', cursive",
                                                 fontWeight: 600,
                                             }}
                                         >
@@ -777,17 +883,22 @@ export default function Welcome() {
                                     </h1>
 
                                     <p
-                                        className="mx-auto mb-8 max-w-xl text-lg leading-relaxed text-rose-100/70 lg:mx-0"
-                                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                                        className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-rose-100/70 sm:text-lg lg:mx-0"
+                                        style={{
+                                            fontFamily:
+                                                "'Cormorant Garamond', serif",
+                                        }}
                                     >
-                                        Create a personalized, immersive Valentine&apos;s
-                                        experience for your special someone. Add photos, music,
-                                        heartfelt messages — and watch their reaction unfold.
+                                        Create a personalized, immersive
+                                        Valentine&apos;s experience for your
+                                        special someone. Add photos, music,
+                                        heartfelt messages — and watch their
+                                        reaction unfold.
                                     </p>
 
                                     <div className="flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
                                         <Link
-                                            href="/create"
+                                            href={create.index.url()}
                                             className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-rose-600 to-pink-600 px-8 py-4 text-lg font-medium text-white shadow-lg shadow-rose-500/25 transition-all hover:shadow-xl hover:shadow-rose-500/30"
                                         >
                                             <span className="relative z-10">
@@ -844,21 +955,23 @@ export default function Welcome() {
                                     whileInView={{ opacity: 1, scale: 1 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: 0.2 }}
-                                    className="mb-4 inline-block text-sm uppercase tracking-[0.2em] text-rose-400/80"
+                                    className="mb-4 inline-block text-sm tracking-[0.2em] text-rose-400/80 uppercase"
                                 >
                                     Features
                                 </motion.span>
                                 <h2
                                     className="mb-4 text-3xl text-white md:text-4xl"
                                     style={{
-                                        fontFamily: "'Cormorant Garamond', serif",
+                                        fontFamily:
+                                            "'Cormorant Garamond', serif",
                                         fontWeight: 500,
                                     }}
                                 >
                                     What Makes It Special
                                 </h2>
                                 <p className="mx-auto max-w-2xl text-rose-100/60">
-                                    Every detail crafted to make your message unforgettable
+                                    Every detail crafted to make your message
+                                    unforgettable
                                 </p>
                             </motion.div>
 
@@ -994,9 +1107,9 @@ export default function Welcome() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.8 }}
-                                className="relative overflow-hidden rounded-3xl border border-rose-500/20 bg-gradient-to-br from-rose-950/50 to-pink-950/30 p-12 text-center backdrop-blur-sm"
+                                className="relative overflow-hidden rounded-3xl border border-rose-500/20 bg-gradient-to-br from-rose-950/50 to-pink-950/30 p-6 text-center backdrop-blur-sm sm:p-8 md:p-12"
                             >
-                                <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/10 blur-3xl" />
+                                <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-rose-500/10 blur-3xl" />
                                 <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-pink-500/10 blur-3xl" />
 
                                 <div className="relative">
@@ -1018,23 +1131,28 @@ export default function Welcome() {
                                     <h2
                                         className="mb-4 text-3xl text-white md:text-4xl"
                                         style={{
-                                            fontFamily: "'Cormorant Garamond', serif",
+                                            fontFamily:
+                                                "'Cormorant Garamond', serif",
                                             fontWeight: 500,
                                         }}
                                     >
                                         Ready to confess your feelings?
                                     </h2>
                                     <p className="mx-auto mb-8 max-w-lg text-rose-100/70">
-                                        Don&apos;t let another moment pass. Create something
-                                        beautiful that tells them exactly how you feel.
+                                        Don&apos;t let another moment pass.
+                                        Create something beautiful that tells
+                                        them exactly how you feel.
                                     </p>
 
                                     <Link
-                                        href="/create"
-                                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-8 py-4 text-lg font-medium text-rose-900 transition-all hover:bg-rose-50"
+                                        href={create.index.url()}
+                                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-rose-600 to-pink-600 px-6 py-3.5 text-base font-medium text-white shadow-lg shadow-rose-500/25 transition-all hover:shadow-xl hover:shadow-rose-500/30 sm:px-8 sm:py-4 sm:text-lg"
                                     >
-                                        <span>Start Creating Now</span>
-                                        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                                        <span className="relative z-10">
+                                            Start Creating Now
+                                        </span>
+                                        <ArrowRight className="relative z-10 h-4 w-4 transition-transform group-hover:translate-x-1 sm:h-5 sm:w-5" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-rose-500 to-pink-500 opacity-0 transition-opacity group-hover:opacity-100" />
                                     </Link>
                                 </div>
                             </motion.div>

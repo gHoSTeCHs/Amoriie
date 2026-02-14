@@ -13,8 +13,8 @@ class AudioTrackSeeder extends Seeder
             [
                 'id' => 1,
                 'name' => 'Tender Moments',
-                'artist' => 'Amoriie Studio',
-                'duration_seconds' => 120,
+                'artist' => 'Ashot Danielyan',
+                'duration_seconds' => 198,
                 'file_path' => 'audio/library/tender-moments.mp3',
                 'category' => 'romantic',
                 'mood' => 'gentle',
@@ -25,8 +25,8 @@ class AudioTrackSeeder extends Seeder
             [
                 'id' => 2,
                 'name' => 'Sweet Memories',
-                'artist' => 'Amoriie Studio',
-                'duration_seconds' => 90,
+                'artist' => 'Litesaturation',
+                'duration_seconds' => 138,
                 'file_path' => 'audio/library/sweet-memories.mp3',
                 'category' => 'romantic',
                 'mood' => 'nostalgic',
@@ -37,8 +37,8 @@ class AudioTrackSeeder extends Seeder
             [
                 'id' => 3,
                 'name' => 'Heart Flutter',
-                'artist' => 'Amoriie Studio',
-                'duration_seconds' => 105,
+                'artist' => 'AlexGrohl',
+                'duration_seconds' => 186,
                 'file_path' => 'audio/library/heart-flutter.mp3',
                 'category' => 'romantic',
                 'mood' => 'playful',
@@ -49,8 +49,8 @@ class AudioTrackSeeder extends Seeder
             [
                 'id' => 4,
                 'name' => 'Forever Yours',
-                'artist' => 'Amoriie Studio',
-                'duration_seconds' => 135,
+                'artist' => 'UniqueCreativeAudio',
+                'duration_seconds' => 221,
                 'file_path' => 'audio/library/forever-yours.mp3',
                 'category' => 'romantic',
                 'mood' => 'emotional',

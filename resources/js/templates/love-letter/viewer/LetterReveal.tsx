@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { adjustBrightness } from '@/lib/color-utils';
@@ -73,6 +73,7 @@ function LetterReveal({
     onComplete,
     reducedMotion = false,
 }: LetterRevealProps) {
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [textComplete, setTextComplete] = useState(false);
 
     const { customization } = theme;
@@ -93,7 +94,7 @@ function LetterReveal({
             className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-8 sm:px-6 sm:py-12"
             style={{
                 background: `
-                    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+                    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(212, 175, 55, 0.06) 0%, rgba(212, 175, 55, 0.02) 40%, transparent 75%),
                     linear-gradient(180deg, ${theme.backgroundColor} 0%, ${adjustBrightness(theme.backgroundColor, -3)} 100%)
                 `,
             }}
@@ -242,7 +243,7 @@ function LetterReveal({
                     )}
 
                     {/* Letter content */}
-                    <div className="relative max-h-[80dvh] overflow-y-auto p-6 scrollbar-hide sm:max-h-[75dvh] sm:p-10 md:max-h-[70dvh]">
+                    <div ref={scrollContainerRef} className="relative max-h-[80dvh] overflow-y-auto p-6 scrollbar-hide sm:max-h-[75dvh] sm:p-10 md:max-h-[70dvh]">
                         {/* Date */}
                         <motion.p
                             variants={itemVariants}
@@ -291,6 +292,7 @@ function LetterReveal({
                                 animationType={theme.config.animations.text_reveal}
                                 text={showDropCap ? restOfText : letterText}
                                 theme={theme}
+                                scrollContainerRef={scrollContainerRef}
                                 onStart={onTextRevealStart}
                                 onComplete={handleTextComplete}
                                 reducedMotion={reducedMotion}
@@ -389,7 +391,7 @@ function LetterReveal({
                                         className="group relative px-8 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300"
                                         style={{
                                             fontFamily: 'Cormorant Garamond, Georgia, serif',
-                                            color: theme.accentColor,
+                                            color: theme.inkColor,
                                             background: 'transparent',
                                             border: `1px solid ${theme.accentColor}50`,
                                         }}

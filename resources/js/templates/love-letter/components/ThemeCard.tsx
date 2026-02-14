@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
@@ -12,6 +12,9 @@ type ThemeCardProps = {
 };
 
 function ThemeCardComponent({ theme, isSelected, onSelect }: ThemeCardProps) {
+    const [imageError, setImageError] = useState(false);
+    const hasPreviewImage = theme.preview_image && !imageError;
+
     return (
         <motion.button
             type="button"
@@ -39,44 +42,55 @@ function ThemeCardComponent({ theme, isSelected, onSelect }: ThemeCardProps) {
                 className="aspect-[4/5] w-full"
                 style={{ backgroundColor: theme.palette.background }}
             >
-                <div className="pointer-events-none absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjciIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9Ii4wNSIvPjwvc3ZnPg==')] opacity-30" />
+                {hasPreviewImage ? (
+                    <img
+                        src={theme.preview_image}
+                        alt={`${theme.name} theme preview`}
+                        className="h-full w-full object-cover"
+                        onError={() => setImageError(true)}
+                    />
+                ) : (
+                    <>
+                        <div className="pointer-events-none absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjciIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9Ii4wNSIvPjwvc3ZnPg==')] opacity-30" />
 
-                <div className="absolute inset-x-0 top-0 flex justify-center pt-6">
-                    <div
-                        className="h-24 w-20 rounded-sm shadow-lg"
-                        style={{
-                            backgroundColor: theme.palette.paper[0] || '#f5f0e1',
-                            boxShadow: `0 4px 20px ${theme.palette.background}80`,
-                        }}
-                    >
-                        <div className="flex h-full flex-col p-2">
+                        <div className="absolute inset-x-0 top-0 flex justify-center pt-6">
                             <div
-                                className="h-1 w-8 rounded-full opacity-60"
-                                style={{ backgroundColor: theme.palette.ink[0] || '#2d1810' }}
-                            />
-                            <div className="mt-1.5 space-y-1">
-                                <div
-                                    className="h-0.5 w-full rounded-full opacity-30"
-                                    style={{ backgroundColor: theme.palette.ink[0] || '#2d1810' }}
-                                />
-                                <div
-                                    className="h-0.5 w-3/4 rounded-full opacity-30"
-                                    style={{ backgroundColor: theme.palette.ink[0] || '#2d1810' }}
-                                />
-                                <div
-                                    className="h-0.5 w-5/6 rounded-full opacity-30"
-                                    style={{ backgroundColor: theme.palette.ink[0] || '#2d1810' }}
-                                />
-                            </div>
-                            <div className="mt-auto flex justify-end">
-                                <div
-                                    className="h-4 w-4 rounded-full"
-                                    style={{ backgroundColor: theme.palette.seal[0] || '#8b0000' }}
-                                />
+                                className="h-24 w-20 rounded-sm shadow-lg"
+                                style={{
+                                    backgroundColor: theme.palette.paper[0] || '#f5f0e1',
+                                    boxShadow: `0 4px 20px ${theme.palette.background}80`,
+                                }}
+                            >
+                                <div className="flex h-full flex-col p-2">
+                                    <div
+                                        className="h-1 w-8 rounded-full opacity-60"
+                                        style={{ backgroundColor: theme.palette.ink[0] || '#2d1810' }}
+                                    />
+                                    <div className="mt-1.5 space-y-1">
+                                        <div
+                                            className="h-0.5 w-full rounded-full opacity-30"
+                                            style={{ backgroundColor: theme.palette.ink[0] || '#2d1810' }}
+                                        />
+                                        <div
+                                            className="h-0.5 w-3/4 rounded-full opacity-30"
+                                            style={{ backgroundColor: theme.palette.ink[0] || '#2d1810' }}
+                                        />
+                                        <div
+                                            className="h-0.5 w-5/6 rounded-full opacity-30"
+                                            style={{ backgroundColor: theme.palette.ink[0] || '#2d1810' }}
+                                        />
+                                    </div>
+                                    <div className="mt-auto flex justify-end">
+                                        <div
+                                            className="h-4 w-4 rounded-full"
+                                            style={{ backgroundColor: theme.palette.seal[0] || '#8b0000' }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </>
+                )}
 
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 pt-12">
                     <h4 className="font-serif text-base font-medium tracking-wide text-white">

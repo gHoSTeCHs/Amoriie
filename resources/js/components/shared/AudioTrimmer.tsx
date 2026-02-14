@@ -131,6 +131,8 @@ export function AudioTrimmer({
     const inputRef = useRef<HTMLInputElement>(null);
     const playIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const regionEndRef = useRef(regionEnd);
+    const lastConfirmedStartRef = useRef(0);
+    const isDraggingRegionRef = useRef(false);
 
     const notes = ['♪', '♫', '♬', '♩'];
     const floatingNotes = Array.from({ length: 8 }, (_, i) => ({
@@ -187,6 +189,7 @@ export function AudioTrimmer({
                 const end = Math.min(dur, maxDurationSeconds);
                 setRegionStart(0);
                 setRegionEnd(end);
+                lastConfirmedStartRef.current = 0;
 
                 regions.addRegion({
                     start: 0,
@@ -249,7 +252,9 @@ export function AudioTrimmer({
             ws.on('pause', () => setIsPlaying(false));
             ws.on('finish', () => setIsPlaying(false));
 
-            regions.on('region-updated', (region) => {
+            regions.on('region-update', (region) => {
+                isDraggingRegionRef.current = true;
+
                 const start = region.start;
                 let end = region.end;
 
@@ -260,6 +265,24 @@ export function AudioTrimmer({
 
                 setRegionStart(start);
                 setRegionEnd(end);
+            });
+
+            regions.on('region-updated', (region) => {
+                isDraggingRegionRef.current = false;
+
+                const startChanged = Math.abs(region.start - lastConfirmedStartRef.current) > 0.01;
+                lastConfirmedStartRef.current = region.start;
+
+                if (!ws.isPlaying()) return;
+
+                if (startChanged) {
+                    ws.setTime(region.start);
+                } else {
+                    const currentTime = ws.getCurrentTime();
+                    if (currentTime > region.end) {
+                        ws.setTime(region.start);
+                    }
+                }
             });
 
             try {
@@ -282,6 +305,12 @@ export function AudioTrimmer({
             initializeWavesurfer(file);
         }
     }, [file, initializeWavesurfer]);
+
+    useEffect(() => {
+        if (libraryTrack && waveformRef.current) {
+            initializeWavesurfer(libraryTrack.url);
+        }
+    }, [libraryTrack, initializeWavesurfer]);
 
     const handleFileSelect = useCallback(
         (selectedFile: File) => {
@@ -339,8 +368,7 @@ export function AudioTrimmer({
     const handleLibrarySelect = useCallback((track: AudioTrack) => {
         setFile(null);
         setLibraryTrack(track);
-        initializeWavesurfer(track.url);
-    }, [initializeWavesurfer]);
+    }, []);
 
     const handlePlayPause = useCallback(() => {
         if (!wavesurferRef.current) return;
@@ -357,7 +385,7 @@ export function AudioTrimmer({
             wavesurferRef.current.play();
 
             playIntervalRef.current = setInterval(() => {
-                if (wavesurferRef.current) {
+                if (wavesurferRef.current && !isDraggingRegionRef.current) {
                     const currentTime = wavesurferRef.current.getCurrentTime();
                     if (currentTime >= regionEndRef.current) {
                         wavesurferRef.current.pause();

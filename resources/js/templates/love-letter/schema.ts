@@ -35,6 +35,7 @@ export type LoveLetterAudio = {
 export type LoveLetterFinalMessage = {
     text: string;
     ask_text: string;
+    no_button_behavior: import('@/types/viewer').NoButtonBehavior;
 };
 
 export type LoveLetterYesResponse = {
@@ -100,6 +101,7 @@ export function getDefaultLoveLetterCustomizations(): LoveLetterCustomizations {
         final_message: {
             text: '',
             ask_text: 'Will you be my Valentine?',
+            no_button_behavior: 'plead',
         },
         yes_response: {
             message: "You've made me the happiest person!",

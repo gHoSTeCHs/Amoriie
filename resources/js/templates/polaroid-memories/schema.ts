@@ -19,6 +19,7 @@ export type PolaroidTheme = {
 export type PolaroidFinalMessage = {
     text: string;
     ask_text: string;
+    no_button_behavior: import('@/types/viewer').NoButtonBehavior;
 };
 
 export type PolaroidYesResponse = {
@@ -94,6 +95,7 @@ export function getDefaultPolaroidCustomizations(): PolaroidCustomizations {
         final_message: {
             text: '',
             ask_text: 'Will you be my Valentine?',
+            no_button_behavior: 'plead',
         },
         theme: {
             background: 'cork-board',
