@@ -1,7 +1,9 @@
-import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { memo, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { adjustBrightness } from '@/lib/color-utils';
+import { useNoButtonBehavior } from '@/hooks/use-no-button-behavior';
+import type { NoButtonBehavior } from '@/types/viewer';
 import type { LoveLetterViewerTheme, ViewerResponse } from './types';
 
 type FinalScreenProps = {
@@ -9,6 +11,7 @@ type FinalScreenProps = {
     senderName: string;
     finalMessageText: string;
     askText: string;
+    noButtonBehavior?: NoButtonBehavior;
     theme: LoveLetterViewerTheme;
     onResponse: (response: ViewerResponse) => void;
 };
@@ -75,6 +78,7 @@ const floatingHeartVariants = {
 function FinalScreen({
     finalMessageText,
     askText,
+    noButtonBehavior = 'plead',
     theme,
     onResponse,
 }: FinalScreenProps) {
@@ -82,6 +86,16 @@ function FinalScreen({
     const mutedColor = theme.isDarkBackground
         ? 'rgba(245, 240, 225, 0.7)'
         : 'rgba(45, 24, 16, 0.7)';
+
+    const buttonsContainerRef = useRef<HTMLDivElement>(null);
+    const {
+        noButtonText,
+        noButtonPosition,
+        yesButtonScale,
+        noButtonScale,
+        showGracefulDecline,
+        handleNoClick,
+    } = useNoButtonBehavior(noButtonBehavior, () => onResponse('no'), buttonsContainerRef);
 
     return (
         <motion.div
@@ -209,12 +223,12 @@ function FinalScreen({
                     </motion.div>
                 </motion.div>
 
-                {/* Buttons */}
                 <motion.div
                     variants={itemVariants}
-                    className="flex w-full flex-col gap-4 sm:flex-row sm:justify-center sm:gap-6"
+                    ref={buttonsContainerRef}
+                    className="relative flex w-full flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6"
+                    style={{ minHeight: noButtonBehavior === 'dodge' ? 160 : undefined }}
                 >
-                    {/* Yes button */}
                     <motion.button
                         onClick={() => onResponse('yes')}
                         aria-label="Yes, I accept"
@@ -229,17 +243,18 @@ function FinalScreen({
                                 inset 0 1px 0 rgba(255, 255, 255, 0.2)
                             `,
                         }}
+                        animate={{ scale: yesButtonScale }}
                         whileHover={{
-                            scale: 1.05,
+                            scale: yesButtonScale * 1.05,
                             boxShadow: `
                                 0 12px 40px ${theme.sealColor}60,
                                 0 6px 20px rgba(0, 0, 0, 0.25),
                                 inset 0 1px 0 rgba(255, 255, 255, 0.2)
                             `,
                         }}
-                        whileTap={{ scale: 0.97 }}
+                        whileTap={{ scale: yesButtonScale * 0.97 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                     >
-                        {/* Shimmer effect */}
                         <motion.div
                             className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                             style={{
@@ -265,9 +280,8 @@ function FinalScreen({
                         <span className="relative tracking-wide">Yes!</span>
                     </motion.button>
 
-                    {/* No button */}
                     <motion.button
-                        onClick={() => onResponse('no')}
+                        onClick={handleNoClick}
                         aria-label="Not yet, maybe later"
                         className="group relative flex min-h-[52px] min-w-[140px] items-center justify-center rounded-full px-10 py-3 text-lg transition-all duration-300 sm:min-w-[160px]"
                         style={{
@@ -275,18 +289,41 @@ function FinalScreen({
                             color: mutedColor,
                             fontFamily: 'Cormorant Garamond, Georgia, serif',
                             border: `1px solid ${theme.isDarkBackground ? 'rgba(245, 240, 225, 0.25)' : 'rgba(45, 24, 16, 0.25)'}`,
+                            ...(noButtonPosition ? { position: 'absolute' as const, left: noButtonPosition.x, top: noButtonPosition.y } : {}),
                         }}
+                        animate={{ scale: noButtonScale }}
                         whileHover={{
-                            scale: 1.02,
+                            scale: noButtonScale * 1.02,
                             borderColor: theme.isDarkBackground
                                 ? 'rgba(245, 240, 225, 0.4)'
                                 : 'rgba(45, 24, 16, 0.4)',
                         }}
-                        whileTap={{ scale: 0.98 }}
+                        whileTap={{ scale: noButtonScale * 0.98 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                     >
-                        <span className="relative tracking-wide">Not yet</span>
+                        <span className="relative tracking-wide">{noButtonText}</span>
                     </motion.button>
                 </motion.div>
+
+                <AnimatePresence>
+                    {showGracefulDecline && (
+                        <motion.button
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.5, ease: 'easeOut' }}
+                            onClick={() => onResponse('no')}
+                            className="mt-4 text-sm transition-opacity hover:opacity-80"
+                            style={{
+                                color: mutedColor,
+                                fontFamily: theme.bodyFont,
+                                opacity: 0.6,
+                            }}
+                        >
+                            I respect your answer
+                        </motion.button>
+                    )}
+                </AnimatePresence>
 
                 {/* Bottom flourish */}
                 <motion.div

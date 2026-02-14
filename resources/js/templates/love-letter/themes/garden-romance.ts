@@ -4,7 +4,7 @@ export const gardenRomanceTheme: LetterTheme = {
     id: 'garden-romance',
     name: 'Garden Romance',
     description: 'Fresh spring blossoms and the hope of new beginnings',
-    preview_image: '/images/themes/love-letter/garden-romance-preview.jpg',
+    preview_image: '/images/themes/love-letter/garden-romance-preview.png',
 
     palette: {
         paper: ['#fdf8f5', '#f9f1ec', '#f5eae3', '#f0e3d9', '#ebdcce'],

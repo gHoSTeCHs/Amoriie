@@ -4,7 +4,7 @@ export const royalEleganceTheme: LetterTheme = {
     id: 'royal-elegance',
     name: 'Royal Elegance',
     description: 'Luxurious grandeur fit for royalty, sealed with ceremony',
-    preview_image: '/images/themes/love-letter/royal-elegance-preview.jpg',
+    preview_image: '/images/themes/love-letter/royal-elegance-preview.png',
 
     palette: {
         paper: ['#fffef5', '#f8f6eb', '#f0ede0', '#e8e4d5', '#dfd9c8'],

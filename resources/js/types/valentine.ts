@@ -8,12 +8,8 @@ export type Valentine = {
     slug: string;
     template_id: string;
     customizations: Record<string, unknown>;
-    stats_secret: string;
-    user_id: string | null;
     recipient_name: string;
     sender_name: string | null;
-    creator_email: string | null;
-    notify_on_response: boolean;
     response: ValentineResponse | null;
     responded_at: string | null;
     view_count: number;
@@ -28,7 +24,6 @@ export type Valentine = {
     published_at: string | null;
     created_at: string;
     updated_at: string;
-    deleted_at: string | null;
     template?: Template;
     media?: Media[];
     public_url: string;

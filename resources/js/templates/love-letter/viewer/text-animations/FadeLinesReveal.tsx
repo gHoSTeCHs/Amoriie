@@ -1,13 +1,17 @@
-import { memo, useRef, useLayoutEffect, useMemo } from 'react';
+import { memo, useRef, useLayoutEffect, useMemo, type RefObject } from 'react';
 import gsap from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { motion } from 'framer-motion';
 
 import { parseText } from '../lib/text-animation-utils';
+
+gsap.registerPlugin(ScrollToPlugin);
 
 type FadeLinesRevealProps = {
     text: string;
     font: string;
     color: string;
+    scrollContainerRef?: RefObject<HTMLDivElement | null>;
     onStart?: () => void;
     onComplete: () => void;
     speedMultiplier: number;
@@ -18,6 +22,7 @@ function FadeLinesReveal({
     text,
     font,
     color,
+    scrollContainerRef,
     onStart,
     onComplete,
     speedMultiplier,
@@ -53,6 +58,8 @@ function FadeLinesReveal({
                 y: 15,
             });
 
+            let staggerIndex = 0;
+
             gsap.to(lineElements, {
                 opacity: 1,
                 y: 0,
@@ -63,6 +70,20 @@ function FadeLinesReveal({
                         if (!hasStartedRef.current) {
                             hasStartedRef.current = true;
                             onStart?.();
+                        }
+                        const container = scrollContainerRef?.current;
+                        const lineEl = lineElements[staggerIndex++] as HTMLElement;
+                        if (container && lineEl) {
+                            const lineBottom = lineEl.offsetTop + lineEl.offsetHeight;
+                            const visibleBottom = container.scrollTop + container.clientHeight;
+                            if (lineBottom > visibleBottom - 40) {
+                                gsap.to(container, {
+                                    scrollTo: { y: lineBottom - container.clientHeight + 80 },
+                                    duration: 0.4,
+                                    ease: 'power2.out',
+                                    overwrite: true,
+                                });
+                            }
                         }
                     },
                 },

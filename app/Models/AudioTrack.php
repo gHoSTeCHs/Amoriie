@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 class AudioTrack extends Model
 {
@@ -34,7 +33,7 @@ class AudioTrack extends Model
 
     public function getUrl(): string
     {
-        return Storage::disk('r2')->url($this->file_path);
+        return asset($this->file_path);
     }
 
     public function getFormattedDuration(): string

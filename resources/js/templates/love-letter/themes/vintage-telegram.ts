@@ -4,7 +4,7 @@ export const vintageTelegramTheme: LetterTheme = {
     id: 'vintage-telegram',
     name: 'Vintage Telegram',
     description: 'Nostalgic charm of an old-world telegram, typed with love',
-    preview_image: '/images/themes/love-letter/vintage-telegram-preview.jpg',
+    preview_image: '/images/themes/love-letter/vintage-telegram-preview.png',
 
     palette: {
         paper: ['#f4e4bc', '#e8d5a3', '#dcc68a', '#d0b871', '#c4a958'],

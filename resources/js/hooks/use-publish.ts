@@ -176,17 +176,40 @@ export function usePublish(): UsePublishReturn {
             setResult(null);
 
             const { items, files } = collectMediaFiles(options.customizations);
+
+            const hasMedia = items.length > 0;
+            if (!hasMedia) {
+                items.push({
+                    id: nanoid(),
+                    name: 'Creating Valentine',
+                    type: 'image',
+                    status: 'pending',
+                    progress: 0,
+                });
+            }
+
             setUploadItems(items);
 
-            const fileSizes = items.map((item, index) => {
-                if (item.type === 'image') return files.images[index]?.file.size || 0;
-                return files.audio?.size || 0;
-            });
+            const fileSizes = hasMedia
+                ? items.map((item, index) => {
+                    if (item.type === 'image') return files.images[index]?.file.size || 0;
+                    return files.audio?.size || 0;
+                })
+                : [];
             const totalSize = fileSizes.reduce((a, b) => a + b, 0);
 
             items.forEach((item) => updateItemStatus(item.id, 'uploading'));
 
             const formData = buildFormData(options, files);
+
+            let progressInterval: ReturnType<typeof setInterval> | undefined;
+            if (!hasMedia) {
+                let simulatedProgress = 0;
+                progressInterval = setInterval(() => {
+                    simulatedProgress = Math.min(simulatedProgress + Math.random() * 15 + 5, 90);
+                    items.forEach((item) => updateItemProgress(item.id, Math.round(simulatedProgress)));
+                }, 300);
+            }
 
             try {
                 const response = await apiPostFormData<{ valentine: PublishResult['valentine'] }>(
@@ -194,6 +217,8 @@ export function usePublish(): UsePublishReturn {
                     formData,
                     {
                         onProgress: (overallProgress) => {
+                            if (!hasMedia) return;
+
                             const uploadedBytes = (overallProgress / 100) * totalSize;
                             let accumulated = 0;
 
@@ -215,6 +240,7 @@ export function usePublish(): UsePublishReturn {
                     }
                 );
 
+                if (progressInterval) clearInterval(progressInterval);
                 items.forEach((item) => updateItemStatus(item.id, 'complete'));
                 const publishResult: PublishResult = {
                     success: true,
@@ -224,6 +250,7 @@ export function usePublish(): UsePublishReturn {
                 setIsPublishing(false);
                 return publishResult;
             } catch (error) {
+                if (progressInterval) clearInterval(progressInterval);
                 const errorMessage = getErrorMessage(error);
                 const errorResult: PublishResult = {
                     success: false,

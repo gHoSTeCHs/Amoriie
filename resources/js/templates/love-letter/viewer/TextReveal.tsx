@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, type RefObject } from 'react';
 
 import type { TextRevealAnimation } from '../themes';
 import type { LoveLetterViewerTheme } from './types';
@@ -11,6 +11,7 @@ type TextRevealProps = {
     animationType: TextRevealAnimation;
     text: string;
     theme: LoveLetterViewerTheme;
+    scrollContainerRef?: RefObject<HTMLDivElement | null>;
     onStart?: () => void;
     onComplete: () => void;
     reducedMotion?: boolean;
@@ -20,6 +21,7 @@ function TextReveal({
     animationType,
     text,
     theme,
+    scrollContainerRef,
     onStart,
     onComplete,
     reducedMotion = false,
@@ -31,6 +33,7 @@ function TextReveal({
                     text={text}
                     font={theme.bodyFont}
                     color={theme.inkColor}
+                    scrollContainerRef={scrollContainerRef}
                     onStart={onStart}
                     onComplete={onComplete}
                     speedMultiplier={theme.speedMultiplier}
@@ -44,6 +47,7 @@ function TextReveal({
                     text={text}
                     font={theme.bodyFont}
                     color={theme.inkColor}
+                    scrollContainerRef={scrollContainerRef}
                     onStart={onStart}
                     onComplete={onComplete}
                     speedMultiplier={theme.speedMultiplier}
@@ -57,6 +61,7 @@ function TextReveal({
                     text={text}
                     font={theme.bodyFont}
                     color={theme.inkColor}
+                    scrollContainerRef={scrollContainerRef}
                     onStart={onStart}
                     onComplete={onComplete}
                     speedMultiplier={theme.speedMultiplier}

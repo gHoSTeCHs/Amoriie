@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Database\NeonPostgresConnector;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Connection;
+use Illuminate\Database\Connectors\ConnectionFactory;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -16,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->registerServices();
+        $this->registerNeonConnector();
     }
 
     /**
@@ -66,5 +70,12 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null
         );
+    }
+
+    protected function registerNeonConnector(): void
+    {
+        $this->app->bind('db.connector.pgsql', function () {
+            return new NeonPostgresConnector();
+        });
     }
 }

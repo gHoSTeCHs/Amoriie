@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Valentine;
 
+use App\Rules\ValidFileContent;
 use App\Support\CustomizationConstraints;
 use App\Support\MediaConstraints;
 use App\Support\SlugConstraints;
@@ -58,9 +59,10 @@ class StoreValentineRequest extends FormRequest
             'customizations.audio.background_music' => ['nullable', 'string'],
             'customizations.final_message' => ['nullable', 'array'],
             'customizations.final_message.text' => ['nullable', 'string', 'max:'.CustomizationConstraints::MESSAGE_MAX_LENGTH],
+            'customizations.final_message.no_button_behavior' => ['nullable', 'string', Rule::in(CustomizationConstraints::VALID_NO_BUTTON_BEHAVIORS)],
             'customizations.yes_response' => ['nullable', 'array'],
             'customizations.yes_response.message' => ['nullable', 'string', 'max:'.CustomizationConstraints::MESSAGE_MAX_LENGTH],
-            'audio' => ['nullable', 'file', 'mimes:'.$audioMimes, 'max:'.MediaConstraints::AUDIO_MAX_SIZE_KB],
+            'audio' => ['nullable', 'file', 'mimes:'.$audioMimes, 'max:'.MediaConstraints::AUDIO_MAX_SIZE_KB, new ValidFileContent('audio')],
             'audio_metadata' => ['nullable', 'array'],
             'audio_metadata.duration' => ['nullable', 'numeric', 'min:0', 'max:'.MediaConstraints::AUDIO_MAX_DURATION_SECONDS],
             'audio_metadata.trim_start' => ['nullable', 'numeric', 'min:0'],
@@ -90,7 +92,7 @@ class StoreValentineRequest extends FormRequest
             'customizations.final_message.ask_text' => ['nullable', 'string', 'max:'.CustomizationConstraints::ASK_TEXT_MAX_LENGTH],
             'customizations.yes_response.reveal_photo' => ['nullable', 'string'],
             'images' => ['required', 'array', 'min:'.MediaConstraints::MIN_IMAGES, 'max:'.MediaConstraints::MAX_IMAGES],
-            'images.*' => ['required', 'image', 'mimes:'.$imageMimes, 'max:'.MediaConstraints::IMAGE_MAX_SIZE_KB],
+            'images.*' => ['required', 'image', 'mimes:'.$imageMimes, 'max:'.MediaConstraints::IMAGE_MAX_SIZE_KB, new ValidFileContent('image')],
             'image_metadata' => ['nullable', 'array'],
             'image_metadata.*' => ['nullable', 'array'],
             'image_metadata.*.sort_order' => ['nullable', 'integer', 'min:0'],

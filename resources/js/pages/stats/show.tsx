@@ -1,4 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
+import create from '@/routes/create';
 import { motion } from 'framer-motion';
 import {
     Heart,
@@ -14,7 +15,7 @@ import {
     RefreshCw,
     Loader2,
 } from 'lucide-react';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 import { FloatingHearts } from '@/components/shared/FloatingHearts';
 import { Button } from '@/components/ui/button';
@@ -72,6 +73,7 @@ type ResponseCardConfig = {
     bgClass: string;
     borderClass: string;
     iconBgClass: string;
+    glowColor?: string;
 };
 
 function getResponseCardConfig(status: ResponseStatus): ResponseCardConfig {
@@ -84,6 +86,7 @@ function getResponseCardConfig(status: ResponseStatus): ResponseCardConfig {
                 bgClass: 'bg-gradient-to-br from-emerald-500/20 to-green-500/10',
                 borderClass: 'border-emerald-500/30',
                 iconBgClass: 'bg-gradient-to-br from-emerald-500 to-green-500 shadow-emerald-500/30',
+                glowColor: 'rgba(16, 185, 129, 0.3)',
             };
         case 'no':
             return {
@@ -144,34 +147,121 @@ function getSectionLabel(section: string | null): string {
     return labels[section] || section;
 }
 
+type JourneyStep = {
+    label: string;
+    completed: boolean;
+};
+
+function JourneyProgress({ stats }: { stats: ValentineStats }) {
+    const steps: JourneyStep[] = [
+        { label: 'Sent', completed: true },
+        { label: 'Viewed', completed: stats.view_count > 0 },
+        {
+            label: 'Explored',
+            completed:
+                (stats.last_section_reached !== null &&
+                    stats.last_section_reached !== 'intro') ||
+                stats.furthest_progress >= 50,
+        },
+        { label: 'Responded', completed: stats.response !== null },
+    ];
+
+    return (
+        <div className="flex w-full items-center px-2">
+            {steps.map((step, i) => (
+                <Fragment key={step.label}>
+                    {i > 0 && (
+                        <div
+                            className={cn(
+                                'h-px flex-1 transition-colors',
+                                step.completed
+                                    ? 'bg-rose-500/40'
+                                    : 'bg-white/10',
+                            )}
+                        />
+                    )}
+                    <div className="flex flex-col items-center gap-1.5">
+                        <div
+                            className={cn(
+                                'flex size-7 items-center justify-center rounded-full transition-colors',
+                                step.completed
+                                    ? 'border border-rose-500/40 bg-rose-500/20'
+                                    : 'border border-white/10 bg-white/[0.03]',
+                            )}
+                        >
+                            {step.completed ? (
+                                <Check className="size-3 text-rose-300" />
+                            ) : (
+                                <span className="size-1.5 rounded-full bg-white/20" />
+                            )}
+                        </div>
+                        <span
+                            className={cn(
+                                'text-[10px] tracking-wide',
+                                step.completed
+                                    ? 'text-rose-200/60'
+                                    : 'text-white/25',
+                            )}
+                        >
+                            {step.label}
+                        </span>
+                    </div>
+                </Fragment>
+            ))}
+        </div>
+    );
+}
+
 type StatCardProps = {
     icon: React.ReactNode;
     label: string;
     value: string | number;
     subValue?: string;
     delay: number;
+    accentColor?: string;
 };
 
-function StatCard({ icon, label, value, subValue, delay }: StatCardProps) {
+function StatCard({
+    icon,
+    label,
+    value,
+    subValue,
+    delay,
+    accentColor,
+}: StatCardProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay }}
-            className="rounded-xl border border-white/10 bg-white/[0.02] p-4"
+            className="relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] p-4"
         >
+            {accentColor && (
+                <div
+                    className="absolute left-0 right-0 top-0 h-px"
+                    style={{ background: accentColor }}
+                />
+            )}
             <div className="mb-2 flex items-center gap-2 text-rose-100/50">
                 {icon}
                 <span className="text-xs">{label}</span>
             </div>
             <div className="text-2xl font-semibold text-white">{value}</div>
-            {subValue && <div className="mt-1 text-xs text-rose-100/40">{subValue}</div>}
+            {subValue && (
+                <div className="mt-1 text-xs text-rose-100/40">{subValue}</div>
+            )}
         </motion.div>
     );
 }
 
 function StatsContent({ valentine }: Props) {
-    const { copyLink, shareViaWhatsApp, shareViaNative, canShareNative, isCopied } = useShare();
+    const {
+        copyLink,
+        shareViaWhatsApp,
+        shareViaNative,
+        canShareNative,
+        isCopied,
+    } = useShare();
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     const responseStatus = getResponseStatus(valentine.stats);
@@ -192,59 +282,122 @@ function StatsContent({ valentine }: Props) {
                 transition={{ delay: 0.2 }}
                 className="mb-6 text-center"
             >
+                <p
+                    className="mb-1 text-xs uppercase tracking-[0.2em] text-rose-300/40"
+                    style={{ fontFamily: "'Italiana', serif" }}
+                >
+                    Stats
+                </p>
                 <h1
                     className="mb-2 text-3xl text-white"
-                    style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 500 }}
+                    style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontWeight: 500,
+                    }}
                 >
-                    Stats for {valentine.recipient_name}
+                    {valentine.recipient_name}
                 </h1>
-                <p className="text-rose-100/60">Track how your valentine is doing</p>
+                <p className="text-sm text-rose-100/50">
+                    Track how your valentine is doing
+                </p>
+                <div className="mx-auto mt-3 h-px w-12 bg-rose-500/20" />
             </motion.div>
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3, type: 'spring', stiffness: 300, damping: 30 }}
+                transition={{
+                    delay: 0.3,
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 30,
+                }}
                 className={cn(
                     'mb-6 w-full max-w-md rounded-2xl border p-6',
                     cardConfig.bgClass,
-                    cardConfig.borderClass
+                    cardConfig.borderClass,
                 )}
             >
                 <div className="flex flex-col items-center text-center">
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.4, type: 'spring', stiffness: 300, damping: 20 }}
-                        className={cn(
-                            'mb-4 inline-flex items-center justify-center rounded-full p-4 shadow-lg',
-                            cardConfig.iconBgClass
-                        )}
-                    >
-                        {responseStatus === 'yes' ? (
+                    <div className="relative mb-4">
+                        {cardConfig.glowColor && (
                             <motion.div
-                                animate={{ scale: [1, 1.1, 1] }}
-                                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                            >
-                                {cardConfig.icon}
-                            </motion.div>
-                        ) : (
-                            cardConfig.icon
+                                animate={{
+                                    scale: [1, 1.3, 1],
+                                    opacity: [0.3, 0.1, 0.3],
+                                }}
+                                transition={{
+                                    duration: 3,
+                                    repeat: Infinity,
+                                    ease: 'easeInOut',
+                                }}
+                                className="absolute inset-0 -m-4 rounded-full blur-2xl"
+                                style={{
+                                    backgroundColor: cardConfig.glowColor,
+                                }}
+                            />
                         )}
-                    </motion.div>
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{
+                                delay: 0.4,
+                                type: 'spring',
+                                stiffness: 300,
+                                damping: 20,
+                            }}
+                            className={cn(
+                                'relative inline-flex items-center justify-center rounded-full p-4 shadow-lg',
+                                cardConfig.iconBgClass,
+                            )}
+                        >
+                            {responseStatus === 'yes' ? (
+                                <motion.div
+                                    animate={{ scale: [1, 1.1, 1] }}
+                                    transition={{
+                                        duration: 1.5,
+                                        repeat: Infinity,
+                                        ease: 'easeInOut',
+                                    }}
+                                >
+                                    {cardConfig.icon}
+                                </motion.div>
+                            ) : (
+                                cardConfig.icon
+                            )}
+                        </motion.div>
+                    </div>
                     <h2
                         className="mb-1 text-2xl text-white"
-                        style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 500 }}
+                        style={{
+                            fontFamily: "'Cormorant Garamond', serif",
+                            fontWeight: 500,
+                        }}
                     >
                         {cardConfig.title}
                     </h2>
-                    <p className="text-sm text-rose-100/60">{cardConfig.subtitle}</p>
+                    <p className="text-sm text-rose-100/60">
+                        {cardConfig.subtitle}
+                    </p>
                     {valentine.stats.responded_at && (
                         <p className="mt-2 text-xs text-rose-100/40">
-                            Responded {formatDate(valentine.stats.responded_at)}
+                            Responded{' '}
+                            {formatDate(valentine.stats.responded_at)}
                         </p>
                     )}
                 </div>
+            </motion.div>
+
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 }}
+                className="mb-6 w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-5"
+            >
+                <p className="mb-4 text-center text-[10px] uppercase tracking-[0.15em] text-rose-100/30">
+                    Journey
+                </p>
+                <JourneyProgress stats={valentine.stats} />
             </motion.div>
 
             <div className="mb-6 grid w-full max-w-md grid-cols-2 gap-3">
@@ -254,27 +407,51 @@ function StatsContent({ valentine }: Props) {
                     value={valentine.stats.view_count}
                     subValue={`${valentine.stats.unique_view_count} unique`}
                     delay={0.5}
+                    accentColor="rgba(96, 165, 250, 0.5)"
                 />
                 <StatCard
                     icon={<Clock className="size-4" />}
                     label="Time Spent"
-                    value={formatTimeSpent(valentine.stats.total_time_spent_seconds)}
-                    subValue={valentine.stats.first_viewed_at ? `First viewed ${formatDate(valentine.stats.first_viewed_at)}` : 'Not viewed yet'}
+                    value={formatTimeSpent(
+                        valentine.stats.total_time_spent_seconds,
+                    )}
+                    subValue={
+                        valentine.stats.first_viewed_at
+                            ? `First viewed ${formatDate(valentine.stats.first_viewed_at)}`
+                            : 'Not viewed yet'
+                    }
                     delay={0.55}
+                    accentColor="rgba(251, 191, 36, 0.5)"
                 />
                 <StatCard
                     icon={<TrendingUp className="size-4" />}
                     label="Progress"
-                    value={getSectionLabel(valentine.stats.last_section_reached)}
-                    subValue={valentine.stats.completed ? 'Completed' : 'In progress'}
+                    value={getSectionLabel(
+                        valentine.stats.last_section_reached,
+                    )}
+                    subValue={
+                        valentine.stats.completed ? 'Completed' : 'In progress'
+                    }
                     delay={0.6}
+                    accentColor="rgba(251, 113, 133, 0.5)"
                 />
                 <StatCard
                     icon={<Heart className="size-4" />}
                     label="Response"
-                    value={valentine.stats.response ? (valentine.stats.response === 'yes' ? 'Yes' : 'No') : 'Pending'}
-                    subValue={valentine.stats.response ? 'Final answer' : 'Waiting...'}
+                    value={
+                        valentine.stats.response
+                            ? valentine.stats.response === 'yes'
+                                ? 'Yes'
+                                : 'No'
+                            : 'Pending'
+                    }
+                    subValue={
+                        valentine.stats.response
+                            ? 'Final answer'
+                            : 'Waiting...'
+                    }
                     delay={0.65}
+                    accentColor="rgba(52, 211, 153, 0.5)"
                 />
             </div>
 
@@ -284,12 +461,12 @@ function StatsContent({ valentine }: Props) {
                 transition={{ delay: 0.7 }}
                 className="mb-6 w-full max-w-md"
             >
-                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-                    <div className="mb-3 flex items-center gap-2 text-xs text-rose-100/50">
+                <div className="rounded-2xl border border-rose-500/15 bg-gradient-to-b from-rose-500/[0.04] to-white/[0.01] p-4">
+                    <div className="mb-3 flex items-center gap-2 text-xs text-rose-200/50">
                         <ExternalLink className="size-3.5" />
                         Share link
                     </div>
-                    <div className="flex items-center gap-3 rounded-xl bg-white/[0.04] px-4 py-3">
+                    <div className="flex items-center gap-3 rounded-xl bg-black/20 px-4 py-3">
                         <span className="flex-1 truncate font-mono text-sm text-rose-200">
                             {valentine.public_url}
                         </span>
@@ -306,12 +483,13 @@ function StatsContent({ valentine }: Props) {
                 <Button
                     onClick={() => copyLink(valentine.public_url)}
                     className={cn(
-                        'w-full min-h-[56px] rounded-full text-base font-semibold',
+                        'min-h-[56px] w-full rounded-full text-base font-semibold',
                         'bg-gradient-to-r from-rose-500 to-pink-500',
                         'shadow-lg shadow-rose-500/25',
                         'transition-all duration-200',
                         'hover:shadow-xl hover:shadow-rose-500/30',
-                        isCopied && 'from-emerald-500 to-emerald-600 shadow-emerald-500/25'
+                        isCopied &&
+                            'from-emerald-500 to-emerald-600 shadow-emerald-500/25',
                     )}
                 >
                     {isCopied ? (
@@ -334,7 +512,7 @@ function StatsContent({ valentine }: Props) {
                             recipientName: valentine.recipient_name,
                         })
                     }
-                    className="w-full min-h-[56px] gap-2 rounded-full bg-[#25D366] text-base font-semibold text-white shadow-lg shadow-[#25D366]/25 hover:bg-[#22c35e] hover:shadow-xl"
+                    className="min-h-[56px] w-full gap-2 rounded-full bg-[#25D366] text-base font-semibold text-white shadow-lg shadow-[#25D366]/25 hover:bg-[#22c35e] hover:shadow-xl"
                 >
                     <WhatsAppIcon className="size-5" />
                     Share via WhatsApp
@@ -349,7 +527,7 @@ function StatsContent({ valentine }: Props) {
                             })
                         }
                         variant="outline"
-                        className="w-full min-h-[56px] gap-2 rounded-full border-white/20 bg-white/[0.02] text-base font-semibold text-rose-50 hover:bg-white/[0.05]"
+                        className="min-h-[56px] w-full gap-2 rounded-full border-white/20 bg-white/[0.02] text-base font-semibold text-rose-50 hover:bg-white/[0.05]"
                     >
                         <Share2 className="size-5" />
                         More Sharing Options
@@ -375,7 +553,7 @@ function StatsContent({ valentine }: Props) {
                         className={cn(
                             'flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3',
                             'text-sm text-rose-100/70 transition-colors',
-                            'hover:border-rose-500/30 hover:bg-white/[0.04] hover:text-rose-100'
+                            'hover:border-rose-500/30 hover:bg-white/[0.04] hover:text-rose-100',
                         )}
                     >
                         <ExternalLink className="size-4" />
@@ -389,7 +567,7 @@ function StatsContent({ valentine }: Props) {
                             'flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3',
                             'text-sm text-rose-100/70 transition-colors',
                             'hover:border-rose-500/30 hover:bg-white/[0.04] hover:text-rose-100',
-                            'disabled:opacity-50 disabled:cursor-not-allowed'
+                            'disabled:cursor-not-allowed disabled:opacity-50',
                         )}
                     >
                         {isRefreshing ? (
@@ -402,11 +580,11 @@ function StatsContent({ valentine }: Props) {
                 </div>
 
                 <Link
-                    href="/create"
+                    href={create.index.url()}
                     className={cn(
                         'flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3',
                         'text-sm text-rose-100/70 transition-colors',
-                        'hover:border-rose-500/30 hover:bg-white/[0.04] hover:text-rose-100'
+                        'hover:border-rose-500/30 hover:bg-white/[0.04] hover:text-rose-100',
                     )}
                 >
                     <PlusCircle className="size-4" />
@@ -421,14 +599,17 @@ function StatsContent({ valentine }: Props) {
                 className="mt-8 text-center"
             >
                 {valentine.is_expired ? (
-                    <p className="text-xs text-rose-400/60">This valentine has expired</p>
+                    <p className="text-xs text-rose-400/60">
+                        This valentine has expired
+                    </p>
                 ) : valentine.expires_at ? (
                     <p className="text-xs text-rose-100/40">
                         Expires {formatDate(valentine.expires_at)}
                     </p>
                 ) : null}
                 <p className="mt-1 text-xs text-rose-100/30">
-                    Created {formatDate(valentine.created_at)} by {valentine.sender_name}
+                    Created {formatDate(valentine.created_at)} by{' '}
+                    {valentine.sender_name}
                 </p>
             </motion.div>
         </>
@@ -439,8 +620,13 @@ export default function StatsShow({ valentine }: Props) {
     return (
         <>
             <Head title={`Stats for ${valentine.recipient_name} — Amoriie`}>
+                <meta name="description" content="Track your valentine's journey — see views, engagement, and your recipient's response." />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                <link
+                    rel="preconnect"
+                    href="https://fonts.gstatic.com"
+                    crossOrigin="anonymous"
+                />
                 <link
                     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Italiana&display=swap"
                     rel="stylesheet"
@@ -452,7 +638,7 @@ export default function StatsShow({ valentine }: Props) {
                     className="pointer-events-none absolute inset-0 opacity-30"
                     style={{
                         backgroundImage:
-                            'radial-gradient(circle at 50% 30%, rgba(190,18,60,0.2) 0%, transparent 50%)',
+                            'radial-gradient(circle at 50% 25%, rgba(190,18,60,0.25) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(251,113,133,0.08) 0%, transparent 40%)',
                     }}
                 />
 

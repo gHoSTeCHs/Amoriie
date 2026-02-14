@@ -212,6 +212,7 @@ export function PublishStep() {
             <UploadProgressModal
                 isOpen={isPublishing || (result !== null && !result.success)}
                 items={uploadItems}
+                hasMedia={uploadItems.some(item => item.name !== 'Creating Valentine')}
                 onRetry={handleRetry}
                 onClose={() => !isPublishing && resetPublish()}
             />

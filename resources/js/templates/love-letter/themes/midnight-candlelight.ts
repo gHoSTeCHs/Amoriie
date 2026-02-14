@@ -4,7 +4,7 @@ export const midnightCandlelightTheme: LetterTheme = {
     id: 'midnight-candlelight',
     name: 'Midnight Candlelight',
     description: 'Intimate warmth of a letter written by candlelight on a dark winter evening',
-    preview_image: '/images/themes/love-letter/midnight-candlelight-preview.jpg',
+    preview_image: '/images/themes/love-letter/midnight-candlelight-preview.png',
 
     palette: {
         paper: ['#f5f0e1', '#efe8d5', '#e8dcc4', '#ddd0b3', '#d4c4a0'],

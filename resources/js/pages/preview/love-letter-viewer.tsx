@@ -50,6 +50,7 @@ function buildCustomizations(
         final_message: {
             text: 'I have something important to ask you...',
             ask_text: 'Will you be my Valentine?',
+            no_button_behavior: 'plead',
         },
         yes_response: {
             message: "You've made me the happiest person in the world! I can't wait to celebrate with you.",

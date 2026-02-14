@@ -14,9 +14,11 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+if (app()->isLocal()) {
+    Route::get('dashboard', function () {
+        return Inertia::render('dashboard');
+    })->middleware(['auth', 'verified'])->name('dashboard');
+}
 
 Route::prefix('create')->name('create.')->group(function (): void {
     Route::get('/', [ValentineController::class, 'index'])->name('index');
@@ -45,6 +47,9 @@ Route::prefix('api')->group(function (): void {
         ->name('api.audio-library.index');
 });
 
+Route::get('privacy', fn () => Inertia::render('privacy'))->name('privacy');
+Route::get('terms', fn () => Inertia::render('terms'))->name('terms');
+
 Route::get('for/{slug}', [ValentineController::class, 'show'])->name('valentine.show');
 
 Route::get('stats/{secret}', [StatsController::class, 'show'])
@@ -57,6 +62,10 @@ if (app()->isLocal()) {
         Route::get('/audio-trimmer', fn () => Inertia::render('preview/audio-trimmer'))->name('audio-trimmer');
         Route::get('/love-letter', fn () => Inertia::render('preview/love-letter-viewer'))->name('love-letter');
     });
+
+    Route::get('/envelope', fn () => Inertia::render('envelope'))->name('envelope');
 }
 
-require __DIR__.'/settings.php';
+if (app()->isLocal()) {
+    require __DIR__.'/settings.php';
+}
