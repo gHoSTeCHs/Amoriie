@@ -32,9 +32,9 @@
     </style>
 
     @php
-        $ogTitle = $page['props']['og_title'] ?? config('app.name', 'Amoriie');
-        $ogDescription = $page['props']['og_description'] ?? 'Create beautiful, personalized love letters and valentines for your special someone.';
-        $ogImage = $page['props']['og_image_url'] ?? asset('ogimage.png');
+        $ogTitle = $page['props']['og_title'] ?? 'Amoriie — Create Beautiful Love Letters & Valentines';
+        $ogDescription = $page['props']['og_description'] ?? 'Create beautiful, personalized love letters and valentines for your special someone. Choose from stunning themes, add music, and share your feelings.';
+        $ogImage = $page['props']['og_image_url'] ?? asset('ogimage.jpg');
         $ogUrl = $page['props']['og_url'] ?? url()->current();
     @endphp
 
@@ -44,6 +44,8 @@
     <meta property="og:title" content="{{ $ogTitle }}">
     <meta property="og:description" content="{{ $ogDescription }}">
     <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:url" content="{{ $ogUrl }}">
     <meta property="og:site_name" content="Amoriie">
     <meta name="twitter:card" content="summary_large_image">
