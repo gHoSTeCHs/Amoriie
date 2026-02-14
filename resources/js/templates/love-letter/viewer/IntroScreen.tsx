@@ -97,9 +97,9 @@ function IntroScreen({ recipientName, theme, onStart }: IntroScreenProps) {
             className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-12"
             style={{
                 background: `
-                    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
-                    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255, 147, 41, 0.06) 0%, transparent 40%),
-                    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(255, 147, 41, 0.04) 0%, transparent 40%),
+                    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.03) 35%, transparent 70%),
+                    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255, 147, 41, 0.06) 0%, rgba(255, 147, 41, 0.02) 25%, transparent 60%),
+                    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(255, 147, 41, 0.04) 0%, rgba(255, 147, 41, 0.01) 25%, transparent 60%),
                     linear-gradient(180deg, ${theme.backgroundColor} 0%, ${adjustBrightness(theme.backgroundColor, -5)} 100%)
                 `,
             }}
@@ -119,7 +119,7 @@ function IntroScreen({ recipientName, theme, onStart }: IntroScreenProps) {
             <div
                 className="pointer-events-none absolute inset-0"
                 style={{
-                    background: `radial-gradient(ellipse 70% 60% at 50% 50%, transparent 30%, ${theme.backgroundColor} 100%)`,
+                    background: `radial-gradient(ellipse 70% 60% at 50% 50%, transparent 45%, ${theme.backgroundColor}40 60%, ${theme.backgroundColor}90 80%, ${theme.backgroundColor} 100%)`,
                 }}
             />
 

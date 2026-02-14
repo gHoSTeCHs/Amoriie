@@ -92,51 +92,57 @@ function CandleFlicker({ intensity = 'medium', reducedMotion = false }: CandleFl
 
             {/* Primary warm glow - bottom right corner (main candle source) */}
             <div
-                className={`absolute -bottom-[20%] -right-[10%] ${reducedMotion ? 'candle-flicker-static' : 'candle-flicker-primary'}`}
+                className={`absolute -bottom-[20%] -right-[10%] rounded-full ${reducedMotion ? 'candle-flicker-static' : 'candle-flicker-primary'}`}
                 style={{
                     width: config.glowSize,
                     height: config.glowSize,
                     background: `radial-gradient(
                         ellipse at center,
                         rgba(212, 175, 55, 0.6) 0%,
-                        rgba(255, 147, 41, 0.4) 25%,
-                        rgba(255, 100, 20, 0.2) 50%,
-                        rgba(139, 69, 19, 0.1) 75%,
+                        rgba(255, 147, 41, 0.4) 20%,
+                        rgba(255, 100, 20, 0.2) 40%,
+                        rgba(139, 69, 19, 0.1) 60%,
+                        rgba(139, 69, 19, 0.04) 80%,
                         transparent 100%
                     )`,
+                    filter: 'blur(30px)',
                     opacity: reducedMotion ? config.primaryOpacity : undefined,
                 }}
             />
 
             {/* Secondary glow - bottom left corner (reflected light) */}
             <div
-                className={`absolute -bottom-[15%] -left-[15%] ${reducedMotion ? 'candle-flicker-static' : 'candle-flicker-secondary'}`}
+                className={`absolute -bottom-[15%] -left-[15%] rounded-full ${reducedMotion ? 'candle-flicker-static' : 'candle-flicker-secondary'}`}
                 style={{
                     width: '45%',
                     height: '40%',
                     background: `radial-gradient(
                         ellipse at center,
                         rgba(255, 170, 80, 0.35) 0%,
-                        rgba(212, 175, 55, 0.2) 40%,
-                        rgba(139, 90, 43, 0.08) 70%,
+                        rgba(212, 175, 55, 0.2) 30%,
+                        rgba(139, 90, 43, 0.08) 55%,
+                        rgba(139, 90, 43, 0.03) 75%,
                         transparent 100%
                     )`,
+                    filter: 'blur(25px)',
                     opacity: reducedMotion ? config.secondaryOpacity : undefined,
                 }}
             />
 
             {/* Tertiary glow - top edge (ambient ceiling bounce) */}
             <div
-                className={`absolute -top-[25%] left-1/2 -translate-x-1/2 ${reducedMotion ? 'candle-flicker-static' : 'candle-flicker-tertiary'}`}
+                className={`absolute -top-[25%] left-1/2 -translate-x-1/2 rounded-full ${reducedMotion ? 'candle-flicker-static' : 'candle-flicker-tertiary'}`}
                 style={{
                     width: '80%',
                     height: '35%',
                     background: `radial-gradient(
                         ellipse 70% 50% at 50% 100%,
                         rgba(255, 180, 100, 0.15) 0%,
-                        rgba(212, 175, 55, 0.08) 50%,
+                        rgba(212, 175, 55, 0.08) 40%,
+                        rgba(212, 175, 55, 0.03) 70%,
                         transparent 100%
                     )`,
+                    filter: 'blur(20px)',
                     opacity: reducedMotion ? config.tertiaryOpacity : undefined,
                 }}
             />
@@ -162,7 +168,9 @@ function CandleFlicker({ intensity = 'medium', reducedMotion = false }: CandleFl
                     background: `
                         radial-gradient(
                             ellipse 80% 60% at 50% 50%,
-                            transparent 40%,
+                            transparent 50%,
+                            rgba(12, 6, 7, 0.1) 70%,
+                            rgba(12, 6, 7, 0.25) 85%,
                             rgba(12, 6, 7, 0.3) 100%
                         )
                     `,

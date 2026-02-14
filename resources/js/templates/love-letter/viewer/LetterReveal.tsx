@@ -94,7 +94,7 @@ function LetterReveal({
             className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-8 sm:px-6 sm:py-12"
             style={{
                 background: `
-                    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+                    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(212, 175, 55, 0.06) 0%, rgba(212, 175, 55, 0.02) 40%, transparent 75%),
                     linear-gradient(180deg, ${theme.backgroundColor} 0%, ${adjustBrightness(theme.backgroundColor, -3)} 100%)
                 `,
             }}

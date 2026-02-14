@@ -102,9 +102,9 @@ function FinalScreen({
             className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-12"
             style={{
                 background: `
-                    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
-                    radial-gradient(ellipse 50% 30% at 80% 70%, rgba(139, 0, 0, 0.06) 0%, transparent 40%),
-                    radial-gradient(ellipse 50% 30% at 20% 70%, rgba(139, 0, 0, 0.04) 0%, transparent 40%),
+                    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.03) 35%, transparent 70%),
+                    radial-gradient(ellipse 50% 30% at 80% 70%, rgba(139, 0, 0, 0.06) 0%, rgba(139, 0, 0, 0.02) 30%, transparent 65%),
+                    radial-gradient(ellipse 50% 30% at 20% 70%, rgba(139, 0, 0, 0.04) 0%, rgba(139, 0, 0, 0.01) 30%, transparent 65%),
                     linear-gradient(180deg, ${theme.backgroundColor} 0%, ${adjustBrightness(theme.backgroundColor, -5)} 100%)
                 `,
             }}
@@ -116,7 +116,7 @@ function FinalScreen({
             <div
                 className="pointer-events-none absolute inset-0"
                 style={{
-                    background: `radial-gradient(ellipse 60% 50% at 50% 50%, transparent 40%, ${theme.backgroundColor} 100%)`,
+                    background: `radial-gradient(ellipse 60% 50% at 50% 50%, transparent 55%, ${theme.backgroundColor}80 75%, ${theme.backgroundColor} 100%)`,
                 }}
             />
 
