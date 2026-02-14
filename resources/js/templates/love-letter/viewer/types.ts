@@ -67,6 +67,7 @@ export type FinalScreenProps = {
     senderName: string;
     finalMessageText: string;
     askText: string;
+    noButtonBehavior?: import('@/types/viewer').NoButtonBehavior;
     theme: LoveLetterViewerTheme;
     onResponse: (response: ViewerResponse) => void;
 };

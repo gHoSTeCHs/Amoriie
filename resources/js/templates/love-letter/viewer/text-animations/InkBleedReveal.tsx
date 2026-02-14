@@ -1,13 +1,17 @@
-import { memo, useRef, useLayoutEffect, useMemo } from 'react';
+import { memo, useRef, useLayoutEffect, useMemo, type RefObject } from 'react';
 import gsap from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { motion } from 'framer-motion';
 
 import { parseText, splitTextForAnimation } from '../lib/text-animation-utils';
+
+gsap.registerPlugin(ScrollToPlugin);
 
 type InkBleedRevealProps = {
     text: string;
     font: string;
     color: string;
+    scrollContainerRef?: RefObject<HTMLDivElement | null>;
     onStart?: () => void;
     onComplete: () => void;
     speedMultiplier: number;
@@ -18,6 +22,7 @@ function InkBleedReveal({
     text,
     font,
     color,
+    scrollContainerRef,
     onStart,
     onComplete,
     speedMultiplier,
@@ -60,6 +65,8 @@ function InkBleedReveal({
                 display: 'inline-block',
             });
 
+            let staggerIndex = 0;
+
             gsap.to(chars, {
                 opacity: 1,
                 filter: 'blur(0px)',
@@ -71,6 +78,20 @@ function InkBleedReveal({
                         if (!hasStartedRef.current) {
                             hasStartedRef.current = true;
                             onStart?.();
+                        }
+                        const container = scrollContainerRef?.current;
+                        const charEl = chars[staggerIndex++] as HTMLElement;
+                        if (container && charEl) {
+                            const charBottom = charEl.offsetTop + charEl.offsetHeight;
+                            const visibleBottom = container.scrollTop + container.clientHeight;
+                            if (charBottom > visibleBottom - 40) {
+                                gsap.to(container, {
+                                    scrollTo: { y: charBottom - container.clientHeight + 80 },
+                                    duration: 0.3,
+                                    ease: 'power2.out',
+                                    overwrite: true,
+                                });
+                            }
                         }
                     },
                 },

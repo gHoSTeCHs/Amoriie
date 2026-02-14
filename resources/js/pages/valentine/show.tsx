@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { HeartCrack, Home, Sparkles } from 'lucide-react';
+import create from '@/routes/create';
 
 import { ExpiredScreen } from '@/components/valentine/ExpiredScreen';
 import { OgMeta } from '@/components/shared/OgMeta';
@@ -224,7 +225,7 @@ function NotFoundScreen() {
                     className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
                 >
                     <Link
-                        href="/create"
+                        href={create.index.url()}
                         className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-rose-600 to-pink-600 px-7 py-3.5 font-medium text-white shadow-lg shadow-rose-500/25 transition-all hover:shadow-xl hover:shadow-rose-500/30"
                     >
                         <HeartCrack className="h-4 w-4" />

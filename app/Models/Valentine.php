@@ -18,6 +18,16 @@ class Valentine extends Model
     /**
      * @var list<string>
      */
+    protected $hidden = [
+        'stats_secret',
+        'creator_email',
+        'user_id',
+        'notify_on_response',
+    ];
+
+    /**
+     * @var list<string>
+     */
     protected $fillable = [
         'user_id',
         'template_id',

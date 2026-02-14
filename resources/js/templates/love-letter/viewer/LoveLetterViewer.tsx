@@ -255,6 +255,7 @@ function LoveLetterViewer({ customizations, slug = '' }: LoveLetterViewerProps) 
                             senderName={safeCustomizations.sender_name}
                             finalMessageText={safeCustomizations.final_message.text}
                             askText={safeCustomizations.final_message.ask_text}
+                            noButtonBehavior={safeCustomizations.final_message.no_button_behavior}
                             theme={viewerTheme}
                             onResponse={handleResponse}
                         />

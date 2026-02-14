@@ -4,6 +4,8 @@ export type ViewerStage = 'intro' | 'envelope' | 'letter' | 'memories' | 'final'
 
 export type ViewerResponse = 'yes' | 'no';
 
+export type NoButtonBehavior = 'dodge' | 'shrink-grow' | 'plead' | 'simple';
+
 export type ViewerProps = {
     customizations: PolaroidCustomizations;
     recipientName: string;

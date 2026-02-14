@@ -4,7 +4,7 @@ export const parisianCafeTheme: LetterTheme = {
     id: 'parisian-cafe',
     name: 'Parisian Café',
     description: 'Romantic afternoon in Paris, love notes over espresso',
-    preview_image: '/images/themes/love-letter/parisian-cafe-preview.jpg',
+    preview_image: '/images/themes/love-letter/parisian-cafe-preview.png',
 
     palette: {
         paper: ['#fdf5f0', '#f8ebe4', '#f3e1d8', '#eed7cc', '#e9cdc0'],

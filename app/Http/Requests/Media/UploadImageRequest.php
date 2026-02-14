@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Media;
 
+use App\Rules\ValidFileContent;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -18,7 +19,7 @@ class UploadImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => ['required', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240'],
+            'image' => ['required', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240', new ValidFileContent('image')],
             'crop' => ['nullable', 'array'],
             'crop.x' => ['required_with:crop', 'numeric', 'min:0'],
             'crop.y' => ['required_with:crop', 'numeric', 'min:0'],

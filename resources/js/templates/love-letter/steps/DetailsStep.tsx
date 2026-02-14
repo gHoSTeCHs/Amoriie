@@ -1,12 +1,20 @@
-import { Sparkles, MessageCircle, Heart } from 'lucide-react';
+import { Sparkles, MessageCircle, Heart, Wand2, MessageSquareHeart, MousePointerClick, ArrowUpDown, Check } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { StepValidationAlert } from '@/components/shared/StepValidationAlert';
 import { cn } from '@/lib/utils';
+import type { NoButtonBehavior } from '@/types/viewer';
 import { useLoveLetterCustomizations } from '../hooks/use-love-letter-customizations';
 import { useLoveLetterValidation } from '../hooks/use-love-letter-validation';
 import { LOVE_LETTER_LIMITS } from '../schema';
+
+const NO_BUTTON_BEHAVIORS: { value: NoButtonBehavior; label: string; description: string; icon: typeof MessageSquareHeart }[] = [
+    { value: 'plead', label: 'Pleading Text', description: 'Button text cycles through funny pleas', icon: MessageSquareHeart },
+    { value: 'dodge', label: 'Dodge', description: 'Button runs away when clicked', icon: MousePointerClick },
+    { value: 'shrink-grow', label: 'Shrink & Grow', description: 'No shrinks, Yes grows bigger', icon: ArrowUpDown },
+    { value: 'simple', label: 'Simple', description: 'Standard yes/no, no tricks', icon: Check },
+];
 
 export function DetailsStep() {
     const { customizations, setFinalMessage, setYesResponse } = useLoveLetterCustomizations();
@@ -51,6 +59,58 @@ export function DetailsStep() {
                         )}>
                             {customizations.final_message.ask_text.length}/{LOVE_LETTER_LIMITS.ask_text.max}
                         </span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="space-y-4">
+                <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-pink-500/20 to-rose-500/20 ring-1 ring-pink-500/30">
+                        <Wand2 className="h-4 w-4 text-pink-400" />
+                    </div>
+                    <h3 className="font-serif text-lg tracking-wide text-white">
+                        No Button Style
+                    </h3>
+                </div>
+
+                <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+                    <p className="font-serif text-sm text-stone-400">
+                        What happens when they try to say no?
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                        {NO_BUTTON_BEHAVIORS.map((behavior) => {
+                            const isSelected = customizations.final_message.no_button_behavior === behavior.value;
+                            const Icon = behavior.icon;
+                            return (
+                                <button
+                                    key={behavior.value}
+                                    type="button"
+                                    onClick={() => setFinalMessage({ no_button_behavior: behavior.value })}
+                                    className={cn(
+                                        'flex min-h-[80px] cursor-pointer flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all duration-200',
+                                        isSelected
+                                            ? 'border-rose-500/50 bg-rose-500/5 ring-1 ring-rose-500/20'
+                                            : 'border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]'
+                                    )}
+                                >
+                                    <Icon className={cn(
+                                        'h-5 w-5 transition-colors duration-200',
+                                        isSelected ? 'text-rose-400' : 'text-stone-500'
+                                    )} />
+                                    <div>
+                                        <p className={cn(
+                                            'text-sm font-medium transition-colors duration-200',
+                                            isSelected ? 'text-white' : 'text-stone-300'
+                                        )}>
+                                            {behavior.label}
+                                        </p>
+                                        <p className="text-xs text-stone-500">
+                                            {behavior.description}
+                                        </p>
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

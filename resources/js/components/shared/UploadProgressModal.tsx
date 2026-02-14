@@ -21,6 +21,7 @@ import type { UploadItem } from '@/types/publish';
 type UploadProgressModalProps = {
     isOpen: boolean;
     items: UploadItem[];
+    hasMedia?: boolean;
     onRetry?: () => void;
     onClose: () => void;
 };
@@ -48,6 +49,7 @@ function getStatusIcon(status: UploadItem['status'], isProcessing: boolean) {
 
 type UploadProgressContentProps = {
     items: UploadItem[];
+    hasMedia: boolean;
     hasErrors: boolean;
     isComplete: boolean;
     isProcessing: boolean;
@@ -56,19 +58,21 @@ type UploadProgressContentProps = {
     isMobile: boolean;
 };
 
-function UploadProgressHeader({ isComplete, hasErrors, isProcessing, isMobile }: { isComplete: boolean; hasErrors: boolean; isProcessing: boolean; isMobile: boolean }) {
+function UploadProgressHeader({ isComplete, hasErrors, hasMedia, isProcessing, isMobile }: { isComplete: boolean; hasErrors: boolean; hasMedia: boolean; isProcessing: boolean; isMobile: boolean }) {
     const HeaderWrapper = isMobile ? SheetHeader : DialogHeader;
     const Title = isMobile ? SheetTitle : DialogTitle;
 
     function getTitle() {
-        if (isComplete) return 'Upload Complete!';
-        if (hasErrors) return 'Upload Failed';
+        if (isComplete) return hasMedia ? 'Upload Complete!' : 'Valentine Created!';
+        if (hasErrors) return hasMedia ? 'Upload Failed' : 'Something Went Wrong';
         if (isProcessing) return 'Processing Your Valentine';
+        if (!hasMedia) return 'Creating Your Valentine';
         return 'Uploading Your Valentine';
     }
 
     function getSubtitle() {
         if (isProcessing) return 'Almost there! Preparing your valentine...';
+        if (!hasMedia) return 'Hang tight while we prepare your valentine...';
         return 'Please wait while we upload your photos and music...';
     }
 
@@ -84,6 +88,7 @@ function UploadProgressHeader({ isComplete, hasErrors, isProcessing, isMobile }:
 
 function UploadProgressContent({
     items,
+    hasMedia,
     hasErrors,
     isComplete,
     isProcessing,
@@ -93,7 +98,7 @@ function UploadProgressContent({
 }: UploadProgressContentProps) {
     return (
         <>
-            <UploadProgressHeader isComplete={isComplete} hasErrors={hasErrors} isProcessing={isProcessing} isMobile={isMobile} />
+            <UploadProgressHeader isComplete={isComplete} hasErrors={hasErrors} hasMedia={hasMedia} isProcessing={isProcessing} isMobile={isMobile} />
 
             <div className="mb-6 space-y-4">
                 <div className="h-2 overflow-hidden rounded-full bg-white/10">
@@ -176,6 +181,7 @@ function UploadProgressContent({
 export function UploadProgressModal({
     isOpen,
     items,
+    hasMedia = true,
     onRetry,
     onClose,
 }: UploadProgressModalProps) {
@@ -192,6 +198,7 @@ export function UploadProgressModal({
 
     const contentProps = {
         items,
+        hasMedia,
         hasErrors,
         isComplete,
         isProcessing,
