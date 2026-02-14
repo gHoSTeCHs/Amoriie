@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ValentineResponse;
-use App\Jobs\GenerateOgImageJob;
+
 use App\Models\Valentine;
 use App\Services\Contracts\MediaServiceInterface;
 use App\Services\Contracts\ValentineServiceInterface;
@@ -58,8 +58,6 @@ class ValentineService implements ValentineServiceInterface
                 return $valentine->fresh();
             });
         }, 100);
-
-        GenerateOgImageJob::dispatch($valentine);
 
         return $valentine;
     }
