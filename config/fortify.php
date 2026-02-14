@@ -143,7 +143,7 @@ return [
     |
     */
 
-    'features' => env('APP_ENV') === 'local' ? [
+    'features' => [
         Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
@@ -151,6 +151,6 @@ return [
             'confirm' => true,
             'confirmPassword' => true,
         ]),
-    ] : [],
+    ],
 
 ];
