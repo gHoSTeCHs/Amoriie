@@ -135,11 +135,11 @@ class ValentineController extends Controller
         if ($valentine) {
             $ogImageUrl = $valentine->og_image_path
                 ? $this->r2Storage->getPublicUrl($valentine->og_image_path)
-                : asset('images/og-default.png');
+                : asset('images/og-default.jpg');
 
             $title = ($valentine->customizations['title'] ?? null)
                 ? $valentine->customizations['title'] . ' — Amoriie'
-                : "A Surprise for {$valentine->recipient_name} — Amoriie";
+                : "Someone Created a Special Surprise for {$valentine->recipient_name} — Amoriie";
 
             return Inertia::render('valentine/show', [
                 'valentine' => [
@@ -151,7 +151,7 @@ class ValentineController extends Controller
                 ],
                 'og_image_url' => $ogImageUrl,
                 'og_title' => $title,
-                'og_description' => "{$valentine->recipient_name}, someone has created something special just for you. Tap to see your surprise!",
+                'og_description' => "{$valentine->recipient_name}, someone has created something truly special just for you on Amoriie. Tap the link to unwrap your personalized surprise and see what awaits!",
                 'og_url' => $valentine->getPublicUrl(),
                 'public_url' => $valentine->getPublicUrl(),
             ]);
@@ -163,23 +163,23 @@ class ValentineController extends Controller
             ->expired()
             ->first();
 
-        $defaultOgImage = asset('images/og-default.png');
+        $defaultOgImage = asset('images/og-default.jpg');
 
         if ($expiredValentine) {
             return Inertia::render('valentine/show', [
                 'error' => 'expired',
                 'recipient_name' => $expiredValentine->recipient_name,
                 'og_image_url' => $defaultOgImage,
-                'og_title' => 'Valentine Expired — Amoriie',
-                'og_description' => 'This valentine has expired. Create your own special valentine to share with someone you love.',
+                'og_title' => "This Valentine for {$expiredValentine->recipient_name} Has Expired — Amoriie",
+                'og_description' => 'This valentine has expired, but the love lives on. Create your own beautiful, personalized valentine to share with someone special on Amoriie.',
             ]);
         }
 
         return Inertia::render('valentine/show', [
             'error' => 'not_found',
             'og_image_url' => $defaultOgImage,
-            'og_title' => 'Valentine Not Found — Amoriie',
-            'og_description' => 'Create a beautiful, personalized valentine to share with someone special.',
+            'og_title' => 'Valentine Not Found — Create Your Own on Amoriie',
+            'og_description' => 'This valentine could not be found. Create a beautiful, personalized love letter or valentine to share with someone special. Choose from stunning themes and add music.',
         ]);
     }
 
