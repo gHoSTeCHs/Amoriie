@@ -11,6 +11,8 @@ use Laravel\Fortify\Features;
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
+        'ogImageUrl' => asset('ogimage.png'),
+        'appUrl' => config('app.url'),
     ]);
 })->name('home');
 

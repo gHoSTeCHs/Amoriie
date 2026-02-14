@@ -769,11 +769,28 @@ function InteractiveHeart() {
     );
 }
 
-export default function Welcome() {
+export default function Welcome({ ogImageUrl, appUrl }: { ogImageUrl: string; appUrl: string }) {
+    const title = 'Amoriie — Create Beautiful Love Letters & Valentines';
+    const description = 'Create beautiful, personalized love letters and valentines for your special someone. Choose from stunning themes, add music, and share your feelings.';
+
     return (
         <>
-            <Head title="Amoriie — Confess Your Feelings">
-                <meta name="description" content="Create beautiful, personalized love letters and valentines for your special someone. Choose from stunning themes, add music, and share your feelings." />
+            <Head title={title}>
+                <meta name="description" content={description} />
+
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={appUrl} />
+                <meta property="og:title" content={title} />
+                <meta property="og:description" content={description} />
+                <meta property="og:image" content={ogImageUrl} />
+                <meta property="og:site_name" content="Amoriie" />
+
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:url" content={appUrl} />
+                <meta name="twitter:title" content={title} />
+                <meta name="twitter:description" content={description} />
+                <meta name="twitter:image" content={ogImageUrl} />
+
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link
                     rel="preconnect"
