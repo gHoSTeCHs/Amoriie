@@ -14,11 +14,9 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-if (app()->isLocal()) {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
-}
+Route::get('dashboard', function () {
+    return Inertia::render('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::prefix('create')->name('create.')->group(function (): void {
     Route::get('/', [ValentineController::class, 'index'])->name('index');
@@ -66,6 +64,4 @@ if (app()->isLocal()) {
     Route::get('/envelope', fn () => Inertia::render('envelope'))->name('envelope');
 }
 
-if (app()->isLocal()) {
-    require __DIR__.'/settings.php';
-}
+require __DIR__.'/settings.php';
