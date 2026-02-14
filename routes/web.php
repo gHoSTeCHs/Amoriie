@@ -13,6 +13,10 @@ Route::get('/', function () {
         'canRegister' => Features::enabled(Features::registration()),
         'ogImageUrl' => asset('ogimage.png'),
         'appUrl' => config('app.url'),
+        'og_title' => 'Amoriie — Create Beautiful Love Letters & Valentines',
+        'og_description' => 'Create beautiful, personalized love letters and valentines for your special someone. Choose from stunning themes, add music, and share your feelings.',
+        'og_image_url' => asset('ogimage.png'),
+        'og_url' => config('app.url'),
     ]);
 })->name('home');
 

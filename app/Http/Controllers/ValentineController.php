@@ -137,6 +137,10 @@ class ValentineController extends Controller
                 ? $this->r2Storage->getPublicUrl($valentine->og_image_path)
                 : asset('images/og-default.png');
 
+            $title = ($valentine->customizations['title'] ?? null)
+                ? $valentine->customizations['title'] . ' — Amoriie'
+                : "A Surprise for {$valentine->recipient_name} — Amoriie";
+
             return Inertia::render('valentine/show', [
                 'valentine' => [
                     'id' => $valentine->id,
@@ -146,6 +150,9 @@ class ValentineController extends Controller
                     'customizations' => $valentine->customizations,
                 ],
                 'og_image_url' => $ogImageUrl,
+                'og_title' => $title,
+                'og_description' => "{$valentine->recipient_name}, someone has created something special just for you. Tap to see your surprise!",
+                'og_url' => $valentine->getPublicUrl(),
                 'public_url' => $valentine->getPublicUrl(),
             ]);
         }

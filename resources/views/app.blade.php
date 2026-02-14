@@ -31,7 +31,31 @@
         }
     </style>
 
-    <title inertia>{{ config('app.name', 'Laravel') }}</title>
+    <title inertia>{{ $page['props']['og_title'] ?? config('app.name', 'Laravel') }}</title>
+
+    @if(!empty($page['props']['og_title']) || !empty($page['props']['ogImageUrl']))
+        <meta property="og:type" content="{{ $page['props']['og_type'] ?? 'website' }}">
+        <meta property="og:title" content="{{ $page['props']['og_title'] ?? config('app.name') }}">
+        <meta property="og:description" content="{{ $page['props']['og_description'] ?? '' }}">
+        <meta property="og:image" content="{{ $page['props']['og_image_url'] ?? $page['props']['ogImageUrl'] ?? asset('images/og-default.png') }}">
+        <meta property="og:url" content="{{ $page['props']['og_url'] ?? $page['props']['appUrl'] ?? url()->current() }}">
+        <meta property="og:site_name" content="Amoriie">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $page['props']['og_title'] ?? config('app.name') }}">
+        <meta name="twitter:description" content="{{ $page['props']['og_description'] ?? '' }}">
+        <meta name="twitter:image" content="{{ $page['props']['og_image_url'] ?? $page['props']['ogImageUrl'] ?? asset('images/og-default.png') }}">
+    @else
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="{{ config('app.name') }}">
+        <meta property="og:description" content="Create beautiful, personalized love letters and valentines for your special someone.">
+        <meta property="og:image" content="{{ asset('images/og-default.png') }}">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:site_name" content="Amoriie">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ config('app.name') }}">
+        <meta name="twitter:description" content="Create beautiful, personalized love letters and valentines for your special someone.">
+        <meta name="twitter:image" content="{{ asset('images/og-default.png') }}">
+    @endif
 
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
